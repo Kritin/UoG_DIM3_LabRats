@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import date
 
+
 class User(models.Model):
     username = models.CharField(max_length=128, primary_key=True)  # Primary key
     password = models.CharField(max_length=128,null=False) #//// have to change to password field
@@ -9,10 +10,12 @@ class User(models.Model):
     title = models.CharField(max_length=128) 
     name = models.CharField(max_length=128)
     school = models.CharField(max_length=128)
-    email = models.CharField(max_length=128)
+    email = models.EmailField(max_length=128)
     phone = models.CharField(max_length=128)
     userType = models.CharField(max_length=128)
-    webpage = models.URLField()
+    webpage = models.URLField(blank=True)
+    picture = models.ImageField(upload_to='/',blank=True)
+
 
     def __unicode__(self):
         return self.username
@@ -50,31 +53,41 @@ class Tags(models.Model):
 
 # M2M between Tags and Experiment
 class HaveTags(models.Model):
-    experimentID = models.ForeignKey(Experiment,primary_key=True)   
-    tag = models.ForeignKey(Tags,primary_key=True)
+    experimentID = models.ForeignKey(Experiment)   
+    tag = models.ForeignKey(Tags)
 
     def __unicode__(self):
 	return (self.experimentID , self.tag)
+
+    class Meta:
+       unique_together = (("tag", "experimentID"),)
     
 
 # M2M between User and Experiment
 class BidFor(models.Model):
-    username = models.ForeignKey(User,primary_key=True)
-    experimentID = models.ForeignKey(Experiment,primary_key=True)
+    username = models.ForeignKey(User)
+    experimentID = models.ForeignKey(Experiment)
 
     date = models.DateField(null=False)  #default=datetime.date.today
 
     def __unicode__(self):
 	return (self.username , self.experimentID)
 
+    class Meta:
+        unique_together = (("username", "experimentID"),)
+
 
 # M2M between User and Experiment
 class ParticipateIn(models.Model):
-    username = models.ForeignKey(User,primary_key=True)
-    experimentID = models.ForeignKey(Experiment,primary_key=True)
+    username = models.ForeignKey(User)
+    experimentID = models.ForeignKey(Experiment)
 
     def __unicode__(self):
 	return (self.username,self.experimentID)
+
+    class Meta:
+       unique_together = (("username", "experimentID"),)
+
 
 
 
