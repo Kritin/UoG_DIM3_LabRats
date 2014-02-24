@@ -3,13 +3,13 @@ import os
 def populate():
 
 
-    add_user(user="Nitirk",pas="alwaysForgetMyPassword",title="Mr.",name="KRITIN",school="University of Nitirk",mail="0000003@founder.nit.ac.world",phone="AintNoBodyGotTimeForThat",userType="FatherOfAdmin",web="www.nitirk.world")
+    add_user(user="Nitirk2",pas="alwaysForgetMyPassword",title="Mr.",name="KRITIN",school="University of Nitirk",mail="0000003@founder.nit.ac.world",phone="AintNoBodyGotTimeForThat",userType="FatherOfAdmin",web="www.nitirk.world",pic='labRatsLogo.jpg')
   
 
 
 
-def add_user(user,pas,title,name,school,mail,phone,userType,web):
-    u = User.objects.get_or_create(username=user,password=pas,title=title,name=name,school=school,email=mail,phone=phone,userType=userType,webpage=web)
+def add_user(user,pas,title,name,school,mail,phone,userType,web,pic):
+    u = User.objects.get_or_create(username=user,password=pas,title=title,name=name,school=school,email=mail,phone=phone,userType=userType,webpage=web,picture=pic)
     return u
 
 
