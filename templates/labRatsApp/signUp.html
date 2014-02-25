@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Labrats</title>
+    </head>
+
+    <body>
+       <!-- <h1>Register with Labrats</h1> -->
+
+        {% if registered %}
+	 	Thank you for registering
+	 	<a href="/labRatsApp/">Return to the homepage.</a><br />
+	{% else %}
+        	<strong> Register <strong>
+		<form id="user_form" method = "post" action = "/labRatsApp/register/" enctype="multipart/form-data">
+			
+			{% csrf_token %}
+
+			{{ user_form.as_p }}
+
+			<input type="submit" name="submit_regis" value="Register" />
+		</form>
+	{% endif %}
+    </body>
+</html>
+
