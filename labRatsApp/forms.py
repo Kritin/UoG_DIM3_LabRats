@@ -1,9 +1,8 @@
 from django import forms
-from labRatsApp.models import User
+from labRatsApp.models import LabRatUser,User
 
 class UserForm(forms.ModelForm):
 	#username = forms.CharField(max_length = 128)
-	password = forms.CharField(widget=forms.PasswordInput())
 	#title = forms.CharField(max_length=128) 
 	#name = forms.CharField(max_length = 128)
 	#school = forms.CharField(max_length = 128)
@@ -14,5 +13,12 @@ class UserForm(forms.ModelForm):
 
 
 	class Meta:
-		model = User
-		fields = ('username', 'password','email','title','name','school','phone','webpage','picture')
+		model = LabRatUser
+		fields = ( 'title','phone','picture')
+
+class UserForm2(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput())
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password','first_name','last_name')

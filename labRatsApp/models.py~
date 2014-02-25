@@ -1,29 +1,43 @@
 from django.db import models
 from datetime import date
+from django.contrib.auth.models import User
 
 
-class User(models.Model):
-    username = models.CharField(max_length=128, primary_key=True)  # Primary key
-    password = models.CharField(max_length=128,null=False) #//// have to change to password field
-    # user enrol to Time slot reletionship 
-
+class LabRatUser(models.Model):
+    user = models.OneToOneField(User)
     title = models.CharField(max_length=128) 
-    name = models.CharField(max_length=128)
-    school = models.CharField(max_length=128)
-    email = models.EmailField(max_length=128)
     phone = models.CharField(max_length=128)
     userType = models.CharField(max_length=128)
-    webpage = models.URLField(blank=True)
-    picture = models.ImageField(upload_to='',blank=True)
-
+    picture = models.ImageField(upload_to='/',blank=True)
+    webpage = models.URLField(blank=True) #Experimenter
+    school = models.CharField(max_length=128)#Rat
+    age = models.IntegerField()#Rat
+   
 
     def __unicode__(self):
-        return self.username
+        return self.user.username
+
+'''
+class Experimenter(models.Model):
+    user = models.ForeignKey(LabRatUser)
+    webpage = models.URLField(blank=True)
+
+    def __unicode__(self):
+        return self.user
+
+class Rat(moLabRatUserdels.Model):
+    user = models.ForeignKey(LabRatUser)
+    school = models.CharField(max_length=128)
+    age = models.IntegerField()
+
+    def __unicode__(self):
+        return self.user
+
+'''
 
 class Experiment(models.Model):
-    username = models.ForeignKey(User)  
     experimentID = models.IntegerField(unique=True,primary_key=True) 
-
+    user = models.ForeignKey(LabRatUser) 
     description  = models.CharField(max_length=128)
     requirements = models.CharField(max_length=128)
     reward = models.CharField(max_length=128)
@@ -33,15 +47,15 @@ class Experiment(models.Model):
     def __unicode__(self):
         return self.experimentID
 
-#weak entity
-class Timeslots(models.Model):
-    experimentID = models.ForeignKey(Experiment,primary_key=True) #Primary key
+class Timeslot(models.Model):
+    timeslotID = models.IntegerField(unique = True, primary_key=True)
+    experimentID = models.ForeignKey(Experiment) #Primary key
     date = models.DateField(null=False)
     time_from = models.TimeField(null=False)
     time_to  = models.TimeField(null=False)
 
     def __unicode__(self):
-        return self.experimentID
+	return self.timeslotID
 
 #weak entity
 class Tags(models.Model):
@@ -57,38 +71,47 @@ class HaveTags(models.Model):
     tag = models.ForeignKey(Tags)
 
     def __unicode__(self):
-	return (self.experimentID , self.tag)
+         return u'%s %s' % (self.experimentID , self.tag)
 
     class Meta:
-       unique_together = (("tag", "experimentID"),)
+       unique_together = (("experimentID", "tag"),)
     
 
-# M2M between User and Experiment
+# M2M between Rat and Experiment
 class BidFor(models.Model):
-    username = models.ForeignKey(User)
+    user = models.ForeignKey(LabRatUser)
     experimentID = models.ForeignKey(Experiment)
 
     date = models.DateField(null=False)  #default=datetime.date.today
 
     def __unicode__(self):
-	return (self.username , self.experimentID)
+        return u'%s %s' % (self.user , self.experimentID)
 
     class Meta:
-        unique_together = (("username", "experimentID"),)
+        unique_together = (("user", "experimentID"),)
 
 
-# M2M between User and Experiment
+# M2M between Rat and Experiment
 class ParticipateIn(models.Model):
-    username = models.ForeignKey(User)
+    user = models.ForeignKey(LabRatUser)
     experimentID = models.ForeignKey(Experiment)
 
     def __unicode__(self):
-	return (self.username,self.experimentID)
+        return u'%s %s' % (self.user,self.experimentID)
 
     class Meta:
-       unique_together = (("username", "experimentID"),)
+       unique_together = (("user", "experimentID"),)
 
 
+# M2M between Rat and Timeslot  
+class EnrolIn(models.Model):
+    user = models.ForeignKey(LabRatUser)
+    timeslotID = models.ForeignKey(Timeslot)
 
+    def __unicode__(self):
+	return u'%s %s' % (self.user,self.timeslotID)
+
+    class Meta:
+       unique_together = (("user", "timeslotID"),)
 
 

@@ -3,13 +3,13 @@ import os
 def populate():
 
 
-    add_user(user="Nitirk2",pas="alwaysForgetMyPassword",title="Mr.",name="KRITIN",school="University of Nitirk",mail="0000003@founder.nit.ac.world",phone="AintNoBodyGotTimeForThat",userType="FatherOfAdmin",web="www.nitirk.world",pic='labRatsLogo.jpg')
+    add_LabRatUser(user="Nitirk2",pas="alwaysForgetMyPassword",title="Mr.",name="KRITIN",sur="Singh",school="University of Nitirk",mail="0000003@founder.nit.ac.world",phone="AintNoBodyGotTimeForThat",userType="FatherOfAdmin",web="www.nitirk.world",pic='labRatsLogo.jpg')
   
 
 
 
-def add_user(user,pas,title,name,school,mail,phone,userType,web,pic):
-    u = User.objects.get_or_create(username=user,password=pas,title=title,name=name,school=school,email=mail,phone=phone,userType=userType,webpage=web,picture=pic)
+def add_LabRatUser(user,pas,title,name,sur,school,mail,phone,userType,web,pic):
+    u = LabRatUser.objects.get_or_create(user.username=user,user.password=pas,title=title,user.first_name=name,user.last_name = sur,school=school,user.email=mail,phone=phone,userType=userType,webpage=web,picture=pic)
     return u
 
 
@@ -44,7 +44,7 @@ def add_participateIn(user,experID):
 if __name__ == '__main__':
     print "Starting labRatsApp population script..."
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'LabRats.settings')
-    from labRatsApp.models import User, Experiment,Timeslots,Tags,HaveTags,BidFor,ParticipateIn
+    from labRatsApp.models import User, Experiment,Timeslot,Tags,HaveTags,BidFor,ParticipateIn
     populate()
 
 

@@ -3,7 +3,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 
 from labRatsApp.models import User  
-from labRatsApp.forms import UserForm
+from labRatsApp.forms import UserForm,UserForm2
 
 def index(request):
 
@@ -22,10 +22,11 @@ def signUp(request):
 	registered = False
 	if request.method == 'POST':
 		user_form = UserForm(data=request.POST)
+		user_form2 = UserForm2(data=request.POST)
 
 		if user_form.is_valid():
 			user = user_form.save()
-			user.set_password(user.password)
+			#user.set_password(user.password)
 
 			if 'picture' in request.FILES:
 				user.picture = request.FILES['picture']
@@ -36,6 +37,7 @@ def signUp(request):
             		print user_form.errors
 	else:
 		user_form = UserForm()
+		user_form2 = UserForm2()
 
 
 
