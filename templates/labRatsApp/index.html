@@ -22,11 +22,21 @@
 <html>
     <head>
         <title>Labrats</title>
+	{% if user.is_authenticated %}
+		<h1> Hello {{ user.username }}!</h1>
+	{% else %}
+		<h1> Hello Anonymous </h1>
+	{% endif %}
     </head>
 
     <body>
-        <h1>Welcome to LabRats</h1>
-	<a href="/labRatsApp/register/">Register</a>   
+        Welcome to LabRats <br /><br />
+	{% if user.is_authenticated %}
+		<a href="/labRatsApp/logout/">Logout</a> <br />
+	{% else %}
+		<a href="/labRatsApp/register/">Register</a> <br />
+		<a href="/labRatsApp/login/">Login</a> <br />
+	{% endif %}
     </body>
 </html>
 

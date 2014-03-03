@@ -7,7 +7,7 @@ PROJECT_PATH = os.path.abspath(PROJECT_PATH)
 TEMPLATE_PATH = os.path.join(PROJECT_PATH, 'templates')
 STATIC_PATH = os.path.join(PROJECT_PATH,'static')
 DATABASE_PATH = os.path.join(PROJECT_PATH, 'labRatsApp.db')
-LOGIN_URL = '/labRatsApp/login/'
+LOGIN_URL = '/rango/login/'
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG

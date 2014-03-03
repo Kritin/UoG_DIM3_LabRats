@@ -3,5 +3,9 @@ from labRatsApp import views
 
 urlpatterns = patterns('',
         url(r'^$', views.index, name='index'),
-	url(r'^register/$', views.signUp, name = 'signUp')
+	url(r'^register/$', views.signUp, name = 'signUp'),
+	url(r'^login/$', views.user_login, name = 'login'),
+	url(r'^logout/$', views.user_logout, name='logout'),
+	 url(r'^restricted/$', views.restricted, name='restricted')
+    
 )
