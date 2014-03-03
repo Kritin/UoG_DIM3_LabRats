@@ -8,33 +8,12 @@ class LabRatUser(models.Model):
     title = models.CharField(max_length=128) 
     phone = models.CharField(max_length=128)
     userType = models.CharField(max_length=128)
-    picture = models.ImageField(upload_to='/',blank=True)
+    picture = models.ImageField(upload_to='media/',blank=True)
     webpage = models.URLField(blank=True) #Experimenter
     school = models.CharField(max_length=128)#Rat
     age = models.IntegerField()#Rat
-    userType = models.CharField(max_length=128)
-   
-
     def __unicode__(self):
         return self.user.username
-
-'''
-class Experimenter(models.Model):
-    user = models.ForeignKey(LabRatUser)
-    webpage = models.URLField(blank=True)
-
-    def __unicode__(self):
-        return self.user
-
-class Rat(moLabRatUserdels.Model):
-    user = models.ForeignKey(LabRatUser)
-    school = models.CharField(max_length=128)
-    age = models.IntegerField()
-
-    def __unicode__(self):
-        return self.user
-
-'''
 
 class Experiment(models.Model):
     experimentID = models.IntegerField(unique=True,primary_key=True) 
@@ -48,6 +27,7 @@ class Experiment(models.Model):
     def __unicode__(self):
         return self.experimentID
 
+#weak entity
 class Timeslot(models.Model):
     timeslotID = models.IntegerField(unique = True, primary_key=True)
     experimentID = models.ForeignKey(Experiment) #Primary key
@@ -56,7 +36,7 @@ class Timeslot(models.Model):
     time_to  = models.TimeField(null=False)
 
     def __unicode__(self):
-	return self.timeslotID
+	return self.timeslot
 
 #weak entity
 class Tags(models.Model):
@@ -78,7 +58,9 @@ class HaveTags(models.Model):
        unique_together = (("experimentID", "tag"),)
     
 
-# M2M between Rat and Experiment
+    
+
+# M2M between User and Experiment
 class BidFor(models.Model):
     user = models.ForeignKey(LabRatUser)
     experimentID = models.ForeignKey(Experiment)
@@ -92,7 +74,7 @@ class BidFor(models.Model):
         unique_together = (("user", "experimentID"),)
 
 
-# M2M between Rat and Experiment
+# M2M between User and Experiment
 class ParticipateIn(models.Model):
     user = models.ForeignKey(LabRatUser)
     experimentID = models.ForeignKey(Experiment)
@@ -102,7 +84,6 @@ class ParticipateIn(models.Model):
 
     class Meta:
        unique_together = (("user", "experimentID"),)
-
 
 # M2M between Rat and Timeslot  
 class EnrolIn(models.Model):
@@ -114,5 +95,6 @@ class EnrolIn(models.Model):
 
     class Meta:
        unique_together = (("user", "timeslotID"),)
+
 
 

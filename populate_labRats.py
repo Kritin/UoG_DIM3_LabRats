@@ -3,16 +3,19 @@ import os
 def populate():
 
 
-    add_LabRatUser(user="Nitirk2",pas="alwaysForgetMyPassword",title="Mr.",name="KRITIN",sur="Singh",school="University of Nitirk",mail="0000003@founder.nit.ac.world",phone="AintNoBodyGotTimeForThat",userType="FatherOfAdmin",web="www.nitirk.world",pic='labRatsLogo.jpg')
+	user_detail = add_user(user="Kritin2",pas="kritin",firstN="Kritin",lastN="Singh",email="2107613S@student.gla.ac.uk")
+	labRatUser_detail = add_labRatUser(user=user_detail,title="MR.",phone="07858143797",userType="Rat",picture="",webpage="NoWeb",school="UoG",age=18)
+"""
+    add_user(user="Nitirk2",pas="alwaysForgetMyPassword",title="Mr.",name="KRITIN",school="University of Nitirk",mail="0000003@founder.nit.ac.world",phone="AintNoBodyGotTimeForThat",userType="FatherOfAdmin",web="www.nitirk.world",pic='labRatsLogo.jpg')
   
+"""
 
-
-
-def add_LabRatUser(user,pas,title,name,sur,school,mail,phone,userType,web,pic):
-    u = LabRatUser.objects.get_or_create(user.username=user,user.password=pas,title=title,user.first_name=name,user.last_name = sur,school=school,user.email=mail,phone=phone,userType=userType,webpage=web,picture=pic)
+"""
+def add_user(user,pas,title,name,school,mail,phone,userType,web,pic):
+    u = LabRatUser.objects.get_or_create(username=user,password=pas,title=title,name=name,school=school,email=mail,phone=phone,userType=userType,webpage=web,picture=pic)
     return u
-
-
+"""
+"""
 def add_exper(user,experID,des,req,reward,max_parti, partiNum):
     exper = Experiment.objects.get_or_create(username=user,experimentID=experID,description=des,requirements=req,reward=reward,max_participants=max_parti, num_of_participant = partiNum)
     return exper
@@ -37,14 +40,21 @@ def add_bidFor(user,experID,date):
 def add_participateIn(user,experID):
     partiIn = ParticipateIn.objects.get_or_create(username = user,experimentID=experID)
     return partiIn
+"""
 
+def add_user(user,pas,firstN,lastN,email):
+	u = User.objects.get_or_create(username=user,password=pas,first_name=firstN,last_name=lastN,email=email)[0]
+	return u
 
+def add_labRatUser(user,title,phone,userType,picture,webpage,school,age):
+	u2 = LabRatUser.objects.get_or_create(user=user,title=title,phone=phone,userType=userType,picture=picture,webpage=webpage,school=school,age=age)[0]
+	return u2
 
 # Start execution here!
 if __name__ == '__main__':
     print "Starting labRatsApp population script..."
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'LabRats.settings')
-    from labRatsApp.models import User, Experiment,Timeslot,Tags,HaveTags,BidFor,ParticipateIn
+    from labRatsApp.models import User,LabRatUser, Experiment,Timeslot,Tags,HaveTags,BidFor,ParticipateIn
     populate()
 
 
