@@ -18,7 +18,7 @@
 </html>
 
 -->
-
+{% load static %}
 <html>
     <head>
         <title>Labrats</title>
@@ -28,15 +28,49 @@
 		<h1> Hello Anonymous </h1>
 	{% endif %}
     </head>
-
+	
     <body>
-        Welcome to LabRats <br /><br />
-	{% if user.is_authenticated %}
-		<a href="/labRatsApp/logout/">Logout</a> <br />
-	{% else %}
-		<a href="/labRatsApp/register/">Register</a> <br />
-		<a href="/labRatsApp/login/">Login</a> <br />
-	{% endif %}
+	<div id="container">
+		<div id = "Logo">
+			<img src="labRatsLogo.jpg" alt="ratsLogo"> 
+		</div>
+		<div id="leftSide" style="background-color:#FFD700;height:700px;width:200px;float:left;">
+			<div id = Catagories>
+				Catagoies 
+				<ul>
+					<li><a href="">item 1</a> </li>
+					<li><a href="">item 2</a> </li>
+					<li><a href="">item 3</a> </li>
+					<li><a href="">item 4</a> </li>
+					<li><a href="">item 5</a> </li>
+					<li><a href="">item 6</a> </li>
+				</ul>	
+			</div>
+
+			<div id = Catagories>
+				Filters 
+				<ul>
+					<form action="">
+						<input type="checkbox" name="vehicle" value="option1">option 1<br>
+						<input type="checkbox" name="vehicle" value="option2">option 2 <br>
+						<input type="checkbox" name="vehicle" value="option3">option 3 <br>
+						<input type="checkbox" name="vehicle" value="option4">option 4 <br>
+						<input type="checkbox" name="vehicle" value="option5">option 5 <br>
+					</form>
+				</ul>	
+			</div>
+
+		</div>
+		<div id = "topPart"   style="background-color:#FFD700;height:20px;width:170px;float:right;">
+			{% if user.is_authenticated %}
+				<a href="/labRatsApp/logout/">Logout</a> 
+			{% else %}
+				<a href="/labRatsApp/register/">Register</a> 
+				<a href="/labRatsApp/login/">Login</a> 
+			{% endif %}
+		</div>
+	</div>
+
     </body>
 </html>
 
