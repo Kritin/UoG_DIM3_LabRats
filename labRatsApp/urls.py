@@ -8,7 +8,7 @@ urlpatterns = patterns('',
 	url(r'^logout/$', views.user_logout, name='logout'),
 	url(r'^restricted/$', views.restricted, name='restricted'),
 	url(r'^about/$', views.about, name='about'),
-	url(r'^profile/(?P<name>\w+)/$', views.profile, name='profile'),
+	url(r'^profile/(?P<username>\w+)/$', views.profile, name='profile'),
 	url(r'^createExperiment/(?P<username>\w+)/$', views.createExperiment, name='createExperiment')
     
 )

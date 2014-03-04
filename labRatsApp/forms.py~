@@ -34,7 +34,7 @@ class ExperimentForm(forms.ModelForm):
 	
 	class Meta:
 		model = Experiment
-		fields = ( 'description','requirements','max_participants',"reward")
+		fields = ( 'description','requirements','max_participants')
 
 
 

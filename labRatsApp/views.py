@@ -89,12 +89,17 @@ def about(request):
 	context = RequestContext(request)
 	return render_to_response('labRatsApp/about.html', {}, context)
 
-def profile(request,name):
+def profile(request,username):
 	context = RequestContext(request)
-	user = User.objects.all().filter(username = name)[0]
+	user = User.objects.all().filter(username = username)[0]
+	current_user = request.user
 	if user is not  None:
-		userDetail = LabRatUser.objects.all().filter(user =  user)[0]
-		return render_to_response('labRatsApp/profile.html', {'user' : user,'userDetail' : userDetail }, context)
+		if current_user.username !=  user.username:
+			return HttpResponse("Stalker!!, You can not access to this profile.")
+		else:
+			userDetail = LabRatUser.objects.all().filter(user =  current_user)[0]
+			return render_to_response('labRatsApp/profile.html', {'user' : current_user,'userDetail' : userDetail }, context)
+			
 	else:
 		return HttpResponse("Not found this user")
 
@@ -106,13 +111,14 @@ def createExperiment(request,username):
 	create = False
 	if request.method == 'POST':
 		if username is not None:
-	            Ruser = User.objects.all().filter(username = username)[0]  	
-		    user = LabRatUser.objects.all().filter(user = Ruser)[0]
-		    if Ruser.is_active:
+	            user = User.objects.all().filter(username = username)[0]  	
+		    LabUser = LabRatUser.objects.all().filter(user = user)[0]
+
+		    if user.is_active:
 			experiment_form = ExperimentForm(data=request.POST)
 			if experiment_form.is_valid():
 				experiment = experiment_form.save(commit=False)
-           			experiment.user = user
+           			experiment.LabUser = LabUser
 				experiment.save()
 				create = True
 				return HttpResponseRedirect('/labRatsApp/profile/'+username+"/")
@@ -123,12 +129,19 @@ def createExperiment(request,username):
 		    else:
 		        return HttpResponse("Your labRats account is disabled.")
 		else:
-		    return HttpResponse("Invalid login details supplied.")
+		    return HttpResponse("Invalid useename is None")
 
 		
 	else:
-		experiment_form = ExperimentForm()
-		return render_to_response('labRatsApp/createExperiment.html', {'experiment_form' : experiment_form,'username':username}, context)
+		user = User.objects.all().filter(username = username)[0]
+		LabUser = LabRatUser.objects.all().filter(user = user)[0]
+		if request.user.username != user.username:
+			return HttpResponse("Hacker!! , This is not your username.")
+		elif LabUser.userType == "rat":
+			return HttpResponse("You are not an experimenter")
+		else:
+			experiment_form = ExperimentForm()
+			return render_to_response('labRatsApp/createExperiment.html', {'experiment_form' : experiment_form,'username':username}, context)
 
 	
 
