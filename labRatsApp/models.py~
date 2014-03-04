@@ -13,7 +13,7 @@ class LabRatUser(models.Model):
     school = models.CharField(max_length=128)#Rat
     age = models.IntegerField()#Rat
     def __unicode__(self):
-        return self.user.username
+        return str(self.user.username)
 
 class Experiment(models.Model):
     experimentID = models.IntegerField(unique=True,primary_key=True) 
@@ -22,10 +22,10 @@ class Experiment(models.Model):
     requirements = models.CharField(max_length=128)
     reward = models.CharField(max_length=128)
     max_participants = models.IntegerField()
-    num_of_participants = models.IntegerField()
+    num_of_participants = models.IntegerField(default= "0")
 
     def __unicode__(self):
-        return self.experimentID
+        return str(self.experimentID)
 
 #weak entity
 class Timeslot(models.Model):
@@ -36,14 +36,14 @@ class Timeslot(models.Model):
     time_to  = models.TimeField(null=False)
 
     def __unicode__(self):
-	return self.timeslot
+	return str(self.timeslot)
 
 #weak entity
 class Tags(models.Model):
     tag  = models.CharField(max_length=128,primary_key=True)
 
     def __unicode__(self):
-	return self.tag
+	return str(self.tag)
 
 
 # M2M between Tags and Experiment

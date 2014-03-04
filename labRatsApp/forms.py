@@ -1,5 +1,5 @@
 from django import forms
-from labRatsApp.models import LabRatUser,User
+from labRatsApp.models import LabRatUser,User,Experiment
 
 typee = [('rat','Rat'),('experimenter','Experimenter')]
 
@@ -27,4 +27,14 @@ class UserForm2(forms.ModelForm):
 	class Meta:
 		model = LabRatUser
 		fields = ( 'title','phone','webpage','school','age','picture','userType')
+
+class ExperimentForm(forms.ModelForm):
+
+	max_participants = forms.ChoiceField(choices=[(x, x) for x in range(1, 100)])
+	
+	class Meta:
+		model = Experiment
+		fields = ( 'description','requirements','max_participants')
+
+
 

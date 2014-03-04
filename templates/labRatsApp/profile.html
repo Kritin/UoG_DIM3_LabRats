@@ -20,6 +20,11 @@
 		<li>School : {{userDetail.school}}</li>
 		<li>Age : {{userDetail.age}}</li>
 		<a href="/labRatsApp/"> <button> Back to Homepage</button> </a>
+		{% if user.is_authenticated and userDetail.userType = "experimenter" %}
+			<a href="/labRatsApp/createExperiment/{{user.username}}"> <button>create experiment</button> </a>
+		{% else %}
+			
+		{% endif %}
 
 	</ul>
 

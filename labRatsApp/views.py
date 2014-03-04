@@ -2,10 +2,11 @@ from django.http import HttpResponse,HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 
-from labRatsApp.models import User, LabRatUser
-from labRatsApp.forms import UserForm,UserForm2
+from labRatsApp.models import LabRatUser
+from labRatsApp.forms import UserForm,UserForm2,ExperimentForm
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
 def index(request):
 
@@ -99,7 +100,37 @@ def profile(request,name):
 
 
 
+def createExperiment(request,username):
+	context = RequestContext(request)
 
+	create = False
+	if request.method == 'POST':
+		if username is not None:
+	            Ruser = User.objects.all().filter(username = username)[0]  	
+		    user = LabRatUser.objects.all().filter(user = Ruser)[0]
+		    if Ruser.is_active:
+			experiment_form = ExperimentForm(data=request.POST)
+			if experiment_form.is_valid():
+				experiment = experiment_form.save(commit=False)
+           			experiment.user = user
+				experiment.save()
+				create = True
+				return HttpResponseRedirect('/labRatsApp/profile/'+username+"/")
+			else:	
+            			print experiment_form.errors
+		  		return HttpResponse("Invalid experiment details supplied.")
+
+		    else:
+		        return HttpResponse("Your labRats account is disabled.")
+		else:
+		    return HttpResponse("Invalid login details supplied.")
+
+		
+	else:
+		experiment_form = ExperimentForm()
+		return render_to_response('labRatsApp/createExperiment.html', {'experiment_form' : experiment_form,'username':username}, context)
+
+	
 
 
 
