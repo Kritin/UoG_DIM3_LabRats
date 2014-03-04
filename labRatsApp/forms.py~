@@ -26,5 +26,5 @@ class UserForm2(forms.ModelForm):
 
 	class Meta:
 		model = LabRatUser
-		fields = ( 'title','phone','webpage','school','age','picture')
+		fields = ( 'title','phone','webpage','school','age','picture','userType')
 

@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+       
+        <title>Profile page</title>
+    </head>
+
+    <body>
+	<strong > <h1>{{user.username}}  Profile page </h1></strong> </br>
+	<img  src="media/{{userDetail.picture}}" alt="ratsLogo"  height="250" width="250"> 
+	<strong><header>  {{user.username}} Details</header></strong>
+	<ul>
+		<li>First name : {{user.first_name}}</li>
+		<li>Last name : {{user.last_name}}</li>
+		<li>E-mail : {{user.email}}</li>
+		<li>Phone Number : {{userDetail.phone}}</li>
+		<li>User Type : {{userDetail.userType}}</li>
+		<li>Web Page : {{userDetail.webpage}}</li>
+		<li>School : {{userDetail.school}}</li>
+		<li>Age : {{userDetail.age}}</li>
+		<a href="/labRatsApp/"> <button> Back to Homepage</button> </a>
+
+	</ul>
+
+
+    </body>
+</html>
