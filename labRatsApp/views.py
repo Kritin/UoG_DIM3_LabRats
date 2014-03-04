@@ -84,7 +84,9 @@ def user_logout(request):
     logout(request)
     return HttpResponseRedirect('/labRatsApp/')
 
-
+def about(request):
+	context = RequestContext(request)
+	return render_to_response('labRatsApp/about.html', {}, context)
 
 
 

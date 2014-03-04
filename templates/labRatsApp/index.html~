@@ -1,42 +1,50 @@
+{% load static %}
 <!DOCTYPE html>
-<!---
-{% load static %}
-<html>
-
-    <head>
-        <title>LabRatsApp</title>
-    </head>
-
-    <body>
-        <h1>Kritin says...</h1>
-        hello guys! <strong>{{ boldmessage }}</strong> <br /><br /><br />
-        Just did the database ,admin,populate script,and Setting stuff <br /><br />
-        <a href="/LabRats/about/">About</a><br />
-	<img src ="{% static "labRatsLogo.jpg" %}" alt="Logo" />
-    </body>
-
-</html>
-
--->
-{% load static %}
 <html>
     <head>
+	<script class="jsbin" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<link href="{% static 'css/style.css' %}" rel="stylesheet">
+	    <script src="{% static 'js/jquery-2.0.3.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
         <title>Labrats</title>
+	<!--
 	{% if user.is_authenticated %}
 		<h1> Hello {{ user.username }}!</h1>
 	{% else %}
 		<h1> Hello Anonymous </h1>
 	{% endif %}
+	-->
+	<script>
+		.topPart header{
+    background: #f1f1f1;
+    background-image: -webkit-linear-gradient( top, #f1f1f1, #CCC );
+    background-image: -ms-linear-gradient( top, #f1f1f1, #CCC );
+    background-image: -moz-linear-gradient( top, #f1f1f1, #CCC );
+    background-image: -o-linear-gradient( top, #f1f1f1, #CCC );
+    box-shadow: 0 1px 2px #888;
+    padding: 10px;
+}
+
+.topPart h1 {
+    padding: 0;
+    margin: 0;
+    font-size: 16px;
+    font-weight: normal;
+    text-shadow: 0 1px 2px white;
+    color: #888;
+    text-align: center;
+}
+	</script>
+
     </head>
 	
     <body>
-	<div id="container">
-		<div id = "Logo">
-			<img src="labRatsLogo.jpg" alt="ratsLogo"> 
-		</div>
-		<div id="leftSide" style="background-color:#FFD700;height:700px;width:200px;float:left;">
-			<div id = Catagories>
-				Catagoies 
+	<div class ="container"> 
+		<img id = "logo" src="media/labRatsLogo.jpg" alt="ratsLogo"> 
+
+		<div class ="leftSide">
+			<div class = "Filters" id = "Catagories">
+				<header><h1>Catagories </h1></header>
 				<ul>
 					<li><a href="">item 1</a> </li>
 					<li><a href="">item 2</a> </li>
@@ -47,8 +55,8 @@
 				</ul>	
 			</div>
 
-			<div id = Catagories>
-				Filters 
+			<div class = "Filters" id = "filters">
+				<header><h1>Filters </h1></header>
 				<ul>
 					<form action="">
 						<input type="checkbox" name="vehicle" value="option1">option 1<br>
@@ -61,14 +69,37 @@
 			</div>
 
 		</div>
-		<div id = "topPart"   style="background-color:#FFD700;height:20px;width:170px;float:right;">
+		<div class = "topPart">
+			<header><h1> Lab Rats </h1></header>
 			{% if user.is_authenticated %}
-				<a href="/labRatsApp/logout/">Logout</a> 
+				<a href="/labRatsApp/profile/{{ user.username }}"> WELCOME {{ user.username }}</a>
+				<a href="/labRatsApp/logout/">
+					<button type="button">Logout</button>
+				</a> 
+				
 			{% else %}
-				<a href="/labRatsApp/register/">Register</a> 
-				<a href="/labRatsApp/login/">Login</a> 
+				<a href="/labRatsApp/login/">
+					<button type="button">Login</button>
+				</a> 
+
+				<a href="/labRatsApp/register/">
+					<button type="button">Register</button>
+				</a> 
 			{% endif %}
 		</div>
+		<div class = "body">
+			<header><h1>Experiment name</h1></header>
+   			<section>
+				<p>Experiment detail</p>
+				<p>Experiment detail 2</p>
+				<p>Experiment detail 3</p>
+				<button type="button">Bid</button>
+			</section>
+			
+
+		</div>
+
+		
 	</div>
 
     </body>
