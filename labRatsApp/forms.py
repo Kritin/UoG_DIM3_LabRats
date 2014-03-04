@@ -34,7 +34,42 @@ class ExperimentForm(forms.ModelForm):
 	
 	class Meta:
 		model = Experiment
-		fields = ( 'description','requirements','max_participants')
+		fields = ( 'title','description','requirements','max_participants')
+
+
+class EditUserForm(forms.ModelForm):
+	def __init__(self,*args,**kwargs):
+		super(EditUserForm,self).__init__(*args,**kwargs)
+		#self.fields.insert(len(self.fields)-1, 'first_name',forms.ModelChoiceField(queryset=User.objects.filter(first_name=self.initial['first_name'])))
+
+		'''
+
+		self.fields.insert(len(self.fields), 'first_name',forms.CharField(
+User.objects.all().filter(first_name=self.initial['first_name'])[0]))
+ 
+ 		self.fields.insert(len(self.fields), 'last_name',forms.CharField(
+User.objects.all().filter(last_name=self.initial['last_name'])[0]))
+
+ 		self.fields.insert(len(self.fields), 'email',forms.CharField(
+User.objects.all().filter(email=self.initial['email'])[0]))
+	
+	'''
+
+	class Meta:
+		model = User
+		fields = ('first_name','last_name','email')
+
+
+
+class EditLabRatUserForm(forms.ModelForm):
+	def __init__(self,*args,**kwargs):
+		super(EditLabRatUserForm,self).__init__(*args,**kwargs)
+		#self.fields.insert(len(self.fields)-1, 'first_name',forms.ModelChoiceField(queryset=User.objects.filter(first_name=self.initial['first_name'])))
+
+
+	class Meta:
+		model = LabRatUser
+		fields = ('title','phone','webpage','school','age')
 
 
 

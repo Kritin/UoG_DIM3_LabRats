@@ -9,6 +9,8 @@ urlpatterns = patterns('',
 	url(r'^restricted/$', views.restricted, name='restricted'),
 	url(r'^about/$', views.about, name='about'),
 	url(r'^profile/(?P<username>\w+)/$', views.profile, name='profile'),
-	url(r'^createExperiment/(?P<username>\w+)/$', views.createExperiment, name='createExperiment')
+	url(r'^createExperiment/(?P<username>\w+)/$', views.createExperiment, name='createExperiment'),
+	url(r'^experiment/(?P<expId>\w+)/$', views.experimentPage, name='experimentPage'),
+	url(r'^editProfile/$', views.editUserDetail, name='editUserDetail')
     
 )

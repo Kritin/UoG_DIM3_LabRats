@@ -10,17 +10,21 @@
         {% if registered %}
 	 	Thank you for registering
 	 	<a href="/labRatsApp/">Return to the homepage.</a><br />
+	{%if edited %}
+		
 	{% else %}
-        	<strong> Register <strong>
-		<form id="user_form" method = "post" action = "/labRatsApp/register/" enctype="multipart/form-data">
+        	<strong> {{type}} <strong>
+		<form id="user_form" method = "post" action = {{url}}  enctype="multipart/form-data">
 			
 			{% csrf_token %}
 			{{ user_form.as_p }}
 			{{ user_form2.as_p }}
 
-			<input type="submit" name="submit" value="Register" />
+			<input type="submit" name="submit" value={{type}} />
 		</form>
+		<a href="/labRatsApp/"> <button>Return to the homepage </button></a>
 	{% endif %}
+	
     </body>
 </html>
 

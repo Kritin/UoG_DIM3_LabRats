@@ -8,7 +8,7 @@ class LabRatUser(models.Model):
     title = models.CharField(max_length=128) 
     phone = models.CharField(max_length=128)
     userType = models.CharField(max_length=128)
-    picture = models.ImageField(upload_to='media/',blank=True)
+    picture = models.ImageField(upload_to='media/', default = "default.png")
     webpage = models.URLField(blank=True) #Experimenter
     school = models.CharField(max_length=128)#Rat
     age = models.IntegerField()#Rat
@@ -18,6 +18,7 @@ class LabRatUser(models.Model):
 class Experiment(models.Model):
     experimentID = models.IntegerField(unique=True,primary_key=True) 
     user = models.ForeignKey(LabRatUser) 
+    title = models.CharField(max_length=128) 
     description  = models.CharField(max_length=128)
     requirements = models.CharField(max_length=128)
     reward = models.CharField(max_length=128)
