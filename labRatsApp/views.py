@@ -120,18 +120,15 @@ def profile(request,username):
 	try:
 		user = User.objects.all().filter(username = username)[0]
 	except :
-		return HttpResponse(content="404 user not found", status=404)
+		return HttpResponse(content="User not found.", status=404)
 
 	current_user = request.user
 
 	if current_user.username !=  user.username:
 		return HttpResponse(content="Access to this profile is forbidden.", status=403)
 
-	userDetail = LabRatUser.objects.all().filter(user =  current_user)[0]
-	try:
-		experiment = Experiment.objects.all().filter(user = userDetail)
-	except:
-		return HttpResponse("No experiment")
+	userDetail = LabRatUser.objects.all().filter(user = current_user)[0]
+	experiment = Experiment.objects.all().filter(user = userDetail)
 
 	'''
 	if userDetail.userType == "experimenter":
@@ -139,7 +136,7 @@ def profile(request,username):
 	else:
 		return render_to_response('labRatsApp/RatProfile.html', {'user' : current_user,'userDetail' : userDetail }, context)		
 	'''
-	return render_to_response('labRatsApp/profile.html', {'user' : current_user, 'userDetails': userDetail}, context)
+	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetail, "experiments": experiment}, context)
 	
 
 
