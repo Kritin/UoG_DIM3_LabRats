@@ -119,25 +119,27 @@ def profile(request,username):
 	context = RequestContext(request)
 	try:
 		user = User.objects.all().filter(username = username)[0]
-	
-		current_user = request.user
-
-		if current_user.username !=  user.username:
-			return HttpResponse("Stalker!!, You can not access to this profile.")
-		else:
-			userDetail = LabRatUser.objects.all().filter(user =  current_user)[0]
-			try:
-				experiment = Experiment.objects.all().filter(user = userDetail)
-			except:
-				return HttpResponse("No experiment")
-			if userDetail.userType == "experimenter":
-				return render_to_response('labRatsApp/ExperimenterProfile.html', {'user' : current_user,'userDetail' : userDetail,'experiment' : experiment }, context)
-			else:
-				return render_to_response('labRatsApp/RatProfile.html', {'user' : current_user,'userDetail' : userDetail }, context)		
-
-
 	except :
-		return HttpResponse("404 user not found")
+		return HttpResponse(content="404 user not found", status=404)
+
+	current_user = request.user
+
+	if current_user.username !=  user.username:
+		return HttpResponse(content="Access to this profile is forbidden.", status=403)
+
+	userDetail = LabRatUser.objects.all().filter(user =  current_user)[0]
+	try:
+		experiment = Experiment.objects.all().filter(user = userDetail)
+	except:
+		return HttpResponse("No experiment")
+
+	'''
+	if userDetail.userType == "experimenter":
+		return render_to_response('labRatsApp/ExperimenterProfile.html', {'user' : current_user,'userDetail' : userDetail,'experiment' : experiment }, context)
+	else:
+		return render_to_response('labRatsApp/RatProfile.html', {'user' : current_user,'userDetail' : userDetail }, context)		
+	'''
+	return render_to_response('labRatsApp/profile.html', {'user' : current_user, 'userDetails': userDetail}, context)
 	
 
 

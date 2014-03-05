@@ -1,85 +1,89 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-    <head>
-	<script class="jsbin" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
-	<link href="{% static 'css/style.css' %}" rel="stylesheet">
-	    <script src="{% static 'js/jquery-2.0.3.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap.min.js' %}"></script>
-        <title>Labrats</title>
-	<!--
-	{% if user.is_authenticated %}
-		<h1> Hello {{ user.username }}!</h1>
-	{% else %}
-		<h1> Hello Anonymous </h1>
-	{% endif %}
-	-->
-    </head>
-	
-    <body>
-	<div class ="container"> 
-		<img id = "logo" src="media/labRatsLogo.jpg" alt="ratsLogo"> 
+{% extends 'labRatsApp/base.html' %}
 
-		<div class ="leftSide">
-			<div class = "Filters" id = "Catagories">
-				<header><h1>Catagories </h1></header>
-				<ul>
-					<li><a href="">item 1</a> </li>
-					<li><a href="">item 2</a> </li>
-					<li><a href="">item 3</a> </li>
-					<li><a href="">item 4</a> </li>
-					<li><a href="">item 5</a> </li>
-					<li><a href="">item 6</a> </li>
-				</ul>	
+{% block mainbody %}
+
+	<div class="row">
+		<!-- SIDEBAR -->
+		<div class="col-md-2">
+			<!-- Sort By -->
+			<div class="form-group">
+				<select class="form-control">
+					<option selected>Sort By</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+					<option>5</option>
+				</select>
 			</div>
-
-			<div class = "Filters" id = "filters">
-				<header><h1>Filters </h1></header>
-				<ul>
-					<form action="">
-						<input type="checkbox" name="vehicle" value="option1">option 1<br>
-						<input type="checkbox" name="vehicle" value="option2">option 2 <br>
-						<input type="checkbox" name="vehicle" value="option3">option 3 <br>
-						<input type="checkbox" name="vehicle" value="option4">option 4 <br>
-						<input type="checkbox" name="vehicle" value="option5">option 5 <br>
-					</form>
-				</ul>	
+			<!-- Categories panel-->
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Categories</h3>
+				</div>
+				<div class="list-group">
+					<a class="list-group-item active" href="#">Item 1</a>
+					<a class="list-group-item" href="#">Item 2</a>
+					<a class="list-group-item" href="#">Item 3</a>
+				</div>
 			</div>
+			<!-- Filters panel-->
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Filters</h3>
+				</div>
+				<ul class="list-group">
+					<li class="list-group-item" href="#"><input type="checkbox"> Filter 1</li>
+					<li class="list-group-item" href="#"><input type="checkbox"> Filter 2</li>
+					<li class="list-group-item" href="#"><input type="checkbox"> Filter 3</li>
+				</ul>
+			</div>
+		</div>		
+		<!-- EXPERIMENTS -->
+		<div class="col-md-10">
+			<!-- Experiment Card -->
+			<div class="panel panel-default">
+				<!-- Experiment title -->
+				<div class="panel-heading">						
+					<div class="row">
+						<h4 class="col-md-11 col-xs-8"><a href="#">Experiment #1</a></h4>
+						<div class="col-md-1 col-xs-4">
+							<button class="btn btn-success pull-right">Bid</button>
+						</div>
+					</div>
+				</div>
+				<!-- Experiment body -->
+				<div class="panel-body">
+					<!-- Experiment description -->
+					<p>Truncated description. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc eu dapibus enim, ut varius quam. Donec a ultricies ligula. Mauris tempus consequat sollicitudin.</p>
+					
+					<div class="row">
+						<!-- Experiment requirements -->
+						<div class="col-md-6">
+							<div class="well well-sm">
+								<h4>Requirements</h4>
+								
+								<ul>
+									<li>Requirement 1</li>
+									<li>Requirement 2</li>
+									<li>Requirement 3</li>
+								</ul>
+							</div>
+						</div>
+						
+						<div class="col-md-6">
+							<h3 class="pull-right"><span class="glyphicon glyphicon-gbp"></span> 20</h3>
+							
+							<div class="clearfix"></div>
+							
+							<div class="progress">
+								<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">Participants: 60/100</div>
+							</div>
+						</div>						
+					</div>
+				</div> <!-- end of experiment body -->
+			</div> <!-- end of experiment card -->
+		</div> <!-- end of EXPERIMENTS -->
+	</div> <!-- end of row -->
 
-		</div>
-		<div class = "topPart">
-			<header><h1> Lab Rats </h1></header>
-			{% if user.is_authenticated %}
-				<a href="/labRatsApp/profile/{{ user.username }}"> WELCOME {{ user.username }}</a>
-				<a href="/labRatsApp/logout/">
-					<button type="button">Logout</button>
-				</a> 
-				
-			{% else %}
-				<a href="/labRatsApp/login/">
-					<button type="button">Login</button>
-				</a> 
-
-				<a href="/labRatsApp/register/">
-					<button type="button">Register</button>
-				</a> 
-			{% endif %}
-		</div>
-		<div class = "body">
-			<header><h1>Experiment name</h1></header>
-   			<section>
-				<p>Experiment detail</p>
-				<p>Experiment detail 2</p>
-				<p>Experiment detail 3</p>
-				<button type="button">Bid</button>
-			</section>
-			
-
-		</div>
-
-		
-	</div>
-
-    </body>
-</html>
-
+{% endblock %}
