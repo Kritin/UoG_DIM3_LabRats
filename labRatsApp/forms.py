@@ -20,7 +20,7 @@ class UserForm2(forms.ModelForm):
  	#school = forms.CharField(max_length = 128)
  	#phone = forms.IntegerField()
     #userType = forms.MultipleChoiceField(widget=forms.RadioSelect,choices=('Experimenter','Rat'))
-    userType = forms.ChoiceField(widget=forms.RadioSelect(),choices = typee)
+	userType = forms.ChoiceField(widget=forms.RadioSelect(),choices = typee)
  	#webpage = forms.URLField(max_length=200)
     #picture = forms.ImageField(upload_to='/users/level3/2107613s/Desktop/LabRats', blank=True)
 
