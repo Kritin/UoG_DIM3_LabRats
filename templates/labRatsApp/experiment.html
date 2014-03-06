@@ -1,0 +1,252 @@
+{% extends 'labRatsApp/base.html' %}
+
+{% block title %}{{experiment.title}}{% endblock %}
+
+{% block mainbody %}
+
+	<!-- TABS -->
+	
+	{% if user.isOwner %}
+
+		<ul class="nav nav-tabs nav-justified">
+			<li class="active"><a href="#details" data-toggle="tab">Experiment Information</a></li>
+			<li><a href="#participants" data-toggle="tab">Participants</a></li>
+			<li><a href="#bids" data-toggle="tab">Bids</a></li>
+		</ul>
+
+		<p></p>
+
+	{% endif %}
+
+	<div class="tab-content">
+		<!-- Experiment details -->
+		<div class="tab-pane active" id="details">
+			<div class="row">
+				<!-- EXPERIMENT DETAILS -->
+				<div class="col-md-8">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<div class="row">
+								<h4 class="col-md-11 col-xs-8">{{experiment_details.title}}</h4>
+								<div class="col-md-1 col-xs-4">
+									{% if user.canBid %}
+										<a class="btn btn-success pull-right">Bid</a>
+									{% endif %}
+								</div>
+							</div>
+						</div>
+						<div class="panel-body">
+							<p>Experiment description</p>
+
+							<div class="row">
+								<!-- Experiment requirements -->
+								<div class="col-md-6">
+									<div class="well well-sm">
+										<h4>Requirements</h4>
+										
+										<p>{{experiment_details.requirements}}</p>
+									</div>
+								</div>
+								
+								<div class="col-md-6">
+									<h3 class="pull-right"><span class="glyphicon glyphicon-gbp"></span> {{experiment_details.reward}}</h3>
+									
+									<div class="clearfix"></div>
+									
+									Participants: {{experiment_details.num_of_participants}}/{{experiment_details.max_participants}}
+									<div class="progress">
+										<div class="progress-bar" role="progressbar" aria-valuenow="{{experiment_details.num_of_participants}}" aria-valuemin="0" aria-valuemax="{{experiment_details.max_participants}}" style="width: {{experiment_details.percent_full}}%"></div>
+									</div>
+								</div>						
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- AUTHOR DETAILS -->
+				<div class="col-md-4">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title">Author</h3>
+						</div>
+						<div class="panel-body">
+							<div class="row">
+								<div class="col-md-2">
+									<a href="#" class="thumbnail">
+										<img data-src="holder.js/100%x180" src="media/{{user_details.picture}}" alt="Profile picture">
+									</a>
+								</div>
+
+								<div class="col-md-10">
+									<h3>{{user_details.title}} {{user_details.first_name}} {{user_details.last_name}}</h3>
+									<p><a href="#">{{user_details.webpage}}</a></p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		{% if user.isOwner %}
+
+			<!-- Participants -->
+			<div class="tab-pane" id="participants">
+				<table class="table table-hover">
+					<thead>
+						<th>Username</th>
+						<th>Age</th>
+						<th>Sex</th>
+						<th>School</th>
+					</thead>
+					<tbody>
+						<tr>
+							<td>user1</td>
+							<td>21</td>
+							<td>M</td>
+							<td>University of Glasgow</td>
+						</tr>
+						<tr>
+							<td>sexybeast224</td>
+							<td>24</td>
+							<td>M</td>
+							<td>University of Glasgow</td>
+						</tr>
+						<tr>
+							<td>1337</td>
+							<td>28</td>
+							<td>F</td>
+							<td>University of Strathclyde</td>
+						</tr>
+						<tr>
+							<td>ilovejesus982</td>
+							<td>31</td>
+							<td>M</td>
+							<td>University of Glasgow</td>
+						</tr>
+						<tr>
+							<td>stugxt</td>
+							<td>19</td>
+							<td>M</td>
+							<td>University of Glasgow</td>
+						</tr>
+						<tr>
+							<td>psmith</td>
+							<td>24</td>
+							<td>F</td>
+							<td>University of Glasgow</td>
+						</tr>
+						<tr>
+							<td>oasis</td>
+							<td>23</td>
+							<td>F</td>
+							<td>University of Edinburgh</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<!-- Bids -->
+			<div class="tab-pane" id="bids">
+				<table class="table table-hover">
+					<thead>
+						<th>Username</th>
+						<th>Age</th>
+						<th>Sex</th>
+						<th>School</th>
+						<th></th>
+					</thead>
+					<tbody>
+						<tr>
+							<td>user1</td>
+							<td>21</td>
+							<td>M</td>
+							<td>University of Glasgow</td>
+							<td>
+								<div class="pull-right">
+									<button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button> 
+									<button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>sexybeast224</td>
+							<td>24</td>
+							<td>M</td>
+							<td>University of Glasgow</td>
+							<td>
+								<div class="pull-right">
+									<button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button> 
+									<button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>1337</td>
+							<td>28</td>
+							<td>F</td>
+							<td>University of Strathclyde</td>
+							<td>
+								<div class="pull-right">
+									<button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button> 
+									<button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>ilovejesus982</td>
+							<td>31</td>
+							<td>M</td>
+							<td>University of Glasgow</td>
+							<td>
+								<div class="pull-right">
+									<button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button> 
+									<button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>stugxt</td>
+							<td>19</td>
+							<td>M</td>
+							<td>University of Glasgow</td>
+							<td>
+								<div class="pull-right">
+									<button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button> 
+									<button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>psmith</td>
+							<td>24</td>
+							<td>F</td>
+							<td>University of Glasgow</td>
+							<td>
+								<div class="pull-right">
+									<button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button> 
+									<button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>oasis</td>
+							<td>23</td>
+							<td>F</td>
+							<td>University of Edinburgh</td>
+							<td>
+								<div class="pull-right">
+									<button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button> 
+									<button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+		{% endif %}
+
+	</div>
+
+{% endblock %}

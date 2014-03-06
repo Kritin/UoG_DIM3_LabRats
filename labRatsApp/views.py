@@ -17,6 +17,7 @@ def index(request):
 
     return render_to_response('labRatsApp/index.html', {'experiments' : experiments}, context)
 
+@login_required
 def editUserDetail(request):
 	context = RequestContext(request)
 	if request.method == 'POST':
@@ -65,7 +66,7 @@ def signUp(request):
 			user2.save()
 			registered = True
 		else:
-            		print user_form.errors,user_form2.errors
+			print user_form.errors,user_form2.errors
 	else:
 		user_form = UserForm()
 		user_form2 = UserForm2()
@@ -137,7 +138,8 @@ def profile(request,username):
 		return render_to_response('labRatsApp/RatProfile.html', {'user' : current_user,'userDetail' : userDetail }, context)		
 	'''
 	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetail, "experiments": experiment}, context)
-	
+
+@login_required
 def createExperiment(request,username):
 	context = RequestContext(request)
 
@@ -183,7 +185,7 @@ def experimentPage(request,expId):
 		return HttpResponse("What is this")
 	else:
 		experiment_detail = Experiment.objects.all().filter(experimentID = expId)[0]
-		return render_to_response('labRatsApp/experimentPage.html', {'experiment_detail' : experiment_detail}, context)
+		return render_to_response('labRatsApp/experiment.html', {'experiment_details' : experiment_detail}, context)
 	 
 
 	
