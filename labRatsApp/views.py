@@ -9,13 +9,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
 def index(request):
-
     context = RequestContext(request)
-    #context_dict = {'boldmessage': "Cool down tomorrow will be better than this."}
-    user_detail = User.objects.all()
-    context_dict = {'Users' : user_detail}
+    #user_detail = User.objects.all()
+    experiments = Experiment.objects.order_by("-experimentID")[:5]
+    for e in experiments:
+    	e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
 
-    return render_to_response('labRatsApp/index.html', context_dict, context)
+    return render_to_response('labRatsApp/index.html', {'experiments' : experiments}, context)
 
 def editUserDetail(request):
 	context = RequestContext(request)
@@ -114,7 +114,7 @@ def about(request):
 	context = RequestContext(request)
 	return render_to_response('labRatsApp/about.html', {}, context)
 
-
+@login_required
 def profile(request,username):
 	context = RequestContext(request)
 	try:
@@ -138,8 +138,6 @@ def profile(request,username):
 	'''
 	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetail, "experiments": experiment}, context)
 	
-
-
 def createExperiment(request,username):
 	context = RequestContext(request)
 

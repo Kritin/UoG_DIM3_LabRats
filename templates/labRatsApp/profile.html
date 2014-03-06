@@ -74,32 +74,32 @@
 					<!-- Current Experiments -->
 					<div class="tab-pane active" id="currentExperiments">
 						{% for e in currentExperiments %}
-							{% include experiment.html %}
+							{% include experimentInfo.html %}
 						{% endfor %}
 					</div>
 					<!-- Current Bids -->
 					<div class="tab-pane" id="bids">
 						{% for e in currentBids %}
-							{% include experiment.html %}
+							{% include experimentInfo.html %}
 						{% endfor %}
 					</div>
 					<!-- History -->
 					<div class="tab-pane" id="history">
 						{% for e in history %}
-							{% include experiment.html %}
+							{% include experimentInfo.html %}
 						{% endfor %}
 					</div>
 				{% else %}
 					<!-- Active Experiments -->
 					<div class="tab-pane active" id="activeExperiments">
 						{% for e in currentExperiments %}
-							{% include experiment.html %}
+							{% include experimentInfo.html %}
 						{% endfor %}
 					</div>
 					<!-- Past Experiments -->
 					<div class="tab-pane" id="pastExperiments">
 						{% for e in currentBids %}
-							{% include experiment.html %}
+							{% include experimentInfo.html %}
 						{% endfor %}
 					</div>
 				{% endif %}
