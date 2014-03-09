@@ -2,6 +2,8 @@ import os
 
 def populate():
 
+	user_detail = add_user(user="Nitirk",pas="1234",firstN="Kritin",lastN="Singh",email="2107613S@student.gla.ac.uk")
+	labRatUser_detail = add_labRatUser(user=user_detail,title="MR.",phone="07858143797",userType="rat",webpage="nitirk.com",school="UoG",age=120)
 
 	user_detail = add_user(user="Nitirk",pas="1234",firstN="Kritin",lastN="Singh",email="2107613S@student.gla.ac.uk")
 	labRatUser_detail = add_labRatUser(user=user_detail,title="MR.",phone="07858143797",userType="rat",webpage="nitirk.com",school="UoG",age=120)
