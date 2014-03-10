@@ -3,7 +3,8 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 
 from labRatsApp.models import LabRatUser,Experiment
-from labRatsApp.forms import UserForm,UserForm2,ExperimentForm,EditUserForm,EditLabRatUserForm
+from labRatsApp.forms import UserForm, UserDetailsForm, LabRatDetailsForm
+from labRatsApp.forms import ExperimentForm, EditUserForm, EditLabRatUserForm
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -44,36 +45,56 @@ def editUserDetail(request):
 
 	return render_to_response('labRatsApp/signUp.html', {'user_form' : user_form,'user_form2' : user_form2, 'type':'Edit','url':'/labRatsApp/editProfile/'}, context)
 
-
 def signUp(request):
+	# Discourage logged in users from creating accounts
+	if request.user.is_authenticated():
+		return HttpResponseRedirect("/labRatsApp/")
+
 	context = RequestContext(request)
 	registered = False
-	if request.method == 'POST':
-		user_form = UserForm(data=request.POST)
-		user_form2 = UserForm2(data=request.POST)
-		if user_form.is_valid() and user_form2.is_valid():
-			user = user_form.save()
 
+	# Form has been submitted
+	if request.method == "POST":
+		userForm = UserForm(data=request.POST)
+		userDetailsForm = UserDetailsForm(data=request.POST)
+		labRatDetailsForm = LabRatDetailsForm(data=request.POST)
+
+		# Check type of user
+		userHasValidDetails = userDetailsForm.is_valid()
+		isRat = (userDetailsForm.cleaned_data.get('userType') == "rat")
+
+		# Form data is valid
+		if userForm.is_valid() and userHasValidDetails and ((isRat and labRatDetailsForm.is_valid()) or not isRat ):
+			user = userForm.save()
 			user.set_password(user.password)
-            		user.save()
+			user.save()
 
-			user2 = user_form2.save(commit=False)
-           		user2.user = user
+			userDetails = userDetailsForm.save(commit=False)
+			userDetails.user = user
 
 			if 'picture' in request.FILES:
-				user2.picture = request.FILES['picture']
+				userDetails.picture = request.FILES['picture']
 
-			user2.save()
+			userDetails.save()
+
+			if(isRat):
+				labRatDetails = labRatDetailsForm.save(commit=False)
+				labRatDetails.user = userDetails
+				labRatDetails.save()
+
 			registered = True
-		else:
-			print user_form.errors,user_form2.errors
-	else:
-		user_form = UserForm()
-		user_form2 = UserForm2()
-		
 
-	return render_to_response('labRatsApp/signUp.html', {'user_form' : user_form,'user_form2' : user_form2 , 'registered' : registered,'type':'Register','url':"/labRatsApp/register/"}, context)
-    
+		# Form data is invalid
+		else:
+			print userForm.errors, userDetailsForm.errors, labRatDetailsForm.errors
+
+	# Form has not been submitted
+	else:
+		userForm = UserForm()
+		userDetailsForm = UserDetailsForm()
+		labRatDetailsForm = LabRatDetailsForm()
+
+	return render_to_response('labRatsApp/register.html', {'registered': registered, 'userForm': userForm, 'userDetailsForm': userDetailsForm, 'labRatDetailsForm': labRatDetailsForm}, context)
 
 def user_login(request):
 	context = RequestContext(request)
@@ -186,14 +207,3 @@ def experimentPage(request,expId):
 	else:
 		experiment_detail = Experiment.objects.all().filter(experimentID = expId)[0]
 		return render_to_response('labRatsApp/experiment.html', {'experiment_details' : experiment_detail}, context)
-	 
-
-	
-	
-
-
-
-
-
-
-

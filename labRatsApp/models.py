@@ -9,11 +9,22 @@ class LabRatUser(models.Model):
     phone = models.CharField(max_length=128)
     userType = models.CharField(max_length=128)
     picture = models.ImageField(upload_to='media/', default = "default.png")
-    webpage = models.URLField(blank=True) #Experimenter
-    school = models.CharField(max_length=128)#Rat
-    age = models.IntegerField()#Rat
+    webpage = models.URLField(blank=True)
+
     def __unicode__(self):
         return str(self.user.username)
+
+class DemographicsSurvey(models.Model):
+    user = models.OneToOneField(LabRatUser, primary_key=True)
+    school = models.CharField(max_length=128)
+    age = models.IntegerField()
+    sex = models.CharField(max_length=1)
+    firstLanguage = models.CharField(max_length=128)
+    country = models.CharField(max_length=128)
+    educationLevel = models.CharField(max_length=128)
+
+    def __unicode__(self):
+        return str(self.user.user.username)
 
 class Experiment(models.Model):
     experimentID = models.IntegerField(unique=True,primary_key=True) 
