@@ -31,11 +31,15 @@ class Experiment(models.Model):
     user = models.ForeignKey(LabRatUser) 
     title = models.CharField(max_length=128) 
     description  = models.TextField()
-    #requirements = models.CharField(max_length=128)
-    reward = models.IntegerField()
+    requirements = models.CharField(max_length=128)
     max_participants = models.IntegerField()
-    num_of_participants = models.IntegerField(default="0")
-    tags = models.TextField() # sequence of comma delimited words
+    num_of_participants = models.IntegerField(default= "0")
+    date_start = models.DateField(null=False)
+    date_end = models.DateField(null=False)
+    tag  = models.TextField() 
+    rewardType = models.CharField(max_length=128)
+    rewardAmount = models.CharField(max_length=128)
+    status = models.CharField(max_length=128, default= "open")
 
     def __unicode__(self):
         return str(self.experimentID)
