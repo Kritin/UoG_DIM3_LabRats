@@ -204,13 +204,13 @@ def experimentPage(request,expId):
 
 	# Retrieve experiment details
 	try:
-		experimentDetails = Experiment.objects.filter(experimentID=expId)[0]
+		experimentDetails = Experiment.objects.get(experimentID=expId)
 	except:
 		return HttpResponse("Experiment " + expId + " does not exist.", status=404)
 
 	# Retrieve author details
-	author = User.objects.filter(username=experimentDetails.user)[0]
-	authorDetails = LabRatUser.objects.filter(user=author)[0]
+	author = User.objects.get(username=experimentDetails.user)
+	authorDetails = LabRatUser.objects.get(user=author)
 
 	currentUser = {}
 
@@ -219,7 +219,6 @@ def experimentPage(request,expId):
 		currentUser["isOwner"] = True
 
 		#Get list of bidding users
-		#users = ParticipateIn.objects.filter(experimentID=expId)
 		biddingUsers = DemographicsSurvey.objects.filter(user__participatein__experimentID=expId).filter(user__participatein__status="bidding")
 	else:
 		currentUser["isOwner"] = False
@@ -227,7 +226,29 @@ def experimentPage(request,expId):
 
 	# Render template
 	return render_to_response('labRatsApp/experiment.html', {'experimentDetails' : experimentDetails, 'currentUser': currentUser, 'author': author, 'authorDetails': authorDetails, 'biddingUsers': biddingUsers}, context)
-	 
+	
+@login_required
+def acceptUser(request, eID, uID):
+	# Check if experiment is valid
+	try:
+		user = User.objects.filter(experiment__experimentID=eID)[0]
+	except:
+		return HttpResponse("{'success': false}", content_type="application/json", status=404)
+
+	# Check if current user owns experiment
+	if request.user.username != user["username"]:
+		return HttpResponse("{'success': false}", content_type="application/json", status=403)
+
+	# Set ParticipateIn status and date
+
+	# Create response
+
+	return HttpResponse("{'success': true}", content_type="application/json")
+
+@login_required
+def rejectUser(request, eID, uID):
+	return HttpResponse("Hi")
+
 def searchExperiment(request):
 	context = RequestContext(request)
 	if request.method == 'POST':
