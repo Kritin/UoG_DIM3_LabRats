@@ -285,7 +285,7 @@ def experimentPage(request,expId):
 		currentUser["isOwner"] = True
 
 		#Get list of bidding users
-		biddingUsers = DemographicsSurvey.objects.values("user__user__username", "school", "firstLanguage", "age", "educationLevel", "sex", "country").filter(user__participatein__experimentID=expId).filter(user__participatein__status="bidding")
+		biddingUsers = DemographicsSurvey.objects.values("user__user__username", "school", "firstLanguage", "age", "educationLevel", "sex", "country").filter(user__participatein__experimentID=expId, user__participatein__status="bidding")
 	else:
 		currentUser["isOwner"] = False
 		biddingUsers = {}
