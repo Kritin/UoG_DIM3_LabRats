@@ -13,5 +13,6 @@ urlpatterns = patterns('',
 	url(r'^experiment/(?P<expId>\w+)/$', views.experimentPage, name='experimentPage'),
 	url(r'^experiment/(?P<eID>\w+)/(?P<status>\w+)/(?P<username>\w+)/$', views.modifyParticipantStatus, name='modifyParticipantStatus'),
 	url(r'^editProfile/$', views.editUserDetail, name='editUserDetail'),
-	url(r'^searchExperiment/$', views.searchExperiment, name='searchExperiment')    
+	url(r'^searchExperiment/$', views.searchExperiment, name='searchExperiment'),
+	url(r'^bid/(?P<expId>\w+)/$', views.bid, name='bid')  
 )

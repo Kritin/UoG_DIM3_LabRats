@@ -158,10 +158,13 @@ def profile(request,username):
 	for e in experiments:
 		e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
 		e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
-
+	
 	ratDetails = None
 	if(userDetails.userType == "rat"):
 		ratDetails = DemographicsSurvey.objects.filter(user = userDetails)[0]
+	activeExp = Experiment.objects.filter(user = userDetails,status="open")
+	pastExp = Experiment.objects.filter(user = userDetails,status="open")
+	
 
 	'''
 	if userDetail.userType == "experimenter":
@@ -169,7 +172,31 @@ def profile(request,username):
 	else:
 		return render_to_response('labRatsApp/RatProfile.html', {'user' : current_user,'userDetail' : userDetail }, context)		
 	'''
-	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetails, "experiments": experiments, "ratDetails":ratDetails}, context)
+	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetails, "experiments": experiments, "ratDetails":ratDetails,'activeExperiments':activeExp,'pastExperiments':pastExp}, context)
+
+@login_required
+def bid(request,expId):
+	context = RequestContext(request)
+	try:
+		experimentDetails = Experiment.objects.get(experimentID=expId)
+	except:
+		return HttpResponse("Experiment " + expId + " does not exist.", status=404)
+	experimentDetails.num_of_participants = int(experimentDetails.num_of_participants) + 1
+	if int(experimentDetails.num_of_participants) == int(experimentDetails.max_participants) -1 :
+		experimentDetails.status = "Full"
+	try:
+		mainUser = LabRatUser.objects.get(user = request.user)
+		ratUser = DemographicsSurvey.objects.get(user = mainUser)
+	except:
+		return HttpResponse("User " + request.user.username + " does not match." , status=404)
+	try:
+		b = ParticipateIn(user = mainUser,experimentID = experimentDetails ,status = "bidding",date = datetime.date.today())
+		b.save()
+	except:
+		return HttpResponseRedirect('/labRatsApp/')
+	
+	return HttpResponseRedirect('/labRatsApp/')
+
 
 @login_required
 def createExperiment(request,username):
@@ -208,7 +235,7 @@ def createExperiment(request,username):
 			return HttpResponse("You are not an experimenter")
 		else:
 			experiment_form = ExperimentForm()
-			return render_to_response('labRatsApp/createExperiment.html', {'experiment_form' : experiment_form,'username':username, 'reward':experiment_form.rewardAmount}, context)
+			return render_to_response('labRatsApp/createExperiment.html', {'experiment_form' : experiment_form,'username':username}, context)
 
 def experimentPage(request,expId):
 	context = RequestContext(request)

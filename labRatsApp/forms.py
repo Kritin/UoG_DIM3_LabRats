@@ -92,3 +92,6 @@ class EditLabRatUserForm(forms.ModelForm):
 		fields = ('title','phone','webpage','school','age')
 '''
 
+
+
+
