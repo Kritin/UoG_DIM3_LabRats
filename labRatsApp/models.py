@@ -30,11 +30,12 @@ class Experiment(models.Model):
     experimentID = models.IntegerField(unique=True,primary_key=True) 
     user = models.ForeignKey(LabRatUser) 
     title = models.CharField(max_length=128) 
-    description  = models.CharField(max_length=128)
-    requirements = models.CharField(max_length=128)
-    reward = models.CharField(max_length=128)
+    description  = models.TextField()
+    #requirements = models.CharField(max_length=128)
+    reward = models.IntegerField()
     max_participants = models.IntegerField()
-    num_of_participants = models.IntegerField(default= "0")
+    num_of_participants = models.IntegerField(default="0")
+    tags = models.CharField() # sequence of comma delimited words
 
     def __unicode__(self):
         return str(self.experimentID)
@@ -50,13 +51,13 @@ class Timeslot(models.Model):
     def __unicode__(self):
 	return str(self.timeslot)
 
+'''
 #weak entity
 class Tags(models.Model):
     tag  = models.CharField(max_length=128,primary_key=True)
 
     def __unicode__(self):
 	return str(self.tag)
-
 
 # M2M between Tags and Experiment
 class HaveTags(models.Model):
@@ -69,7 +70,6 @@ class HaveTags(models.Model):
     class Meta:
        unique_together = (("experimentID", "tag"),)
 
-'''
 # M2M between User and Experiment
 class BidFor(models.Model):
     user = models.ForeignKey(LabRatUser)
