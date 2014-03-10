@@ -55,11 +55,11 @@
 								</div>
 								
 								<div class="col-md-6">
-									<h3 class="pull-right well well-sm">Reward: <span class="glyphicon glyphicon-gbp"></span> {{e.rewardAmount}}</h3>
+									<h3 class="pull-right well well-sm">Reward: <span class="glyphicon glyphicon-gbp"></span> {{experimentDetails.rewardAmount}}</h3>
 									
 									<div class="clearfix"></div>
 
-									<p class="pull-right"><strong>Tags:</strong> {{e.tags}}</p>
+									<p class="pull-right"><strong>Tags:</strong> {{experimentDetails.tags}}</p>
 								</div>											
 							</div>
 						</div>
@@ -74,15 +74,23 @@
 						</div>
 						<div class="panel-body">
 							<div class="row">
-								<div class="col-md-2">
+								<div class="col-md-4">
 									<a href="#" class="thumbnail">
-										<img data-src="holder.js/100%x180" src="media/{{user_details.picture}}" alt="Profile picture">
+										<img data-src="holder.js/100%x180" src="media/{{authorDetails.picture}}" alt="Profile picture">
 									</a>
 								</div>
 
-								<div class="col-md-10">
-									<h3>{{user_details.title}} {{user_details.first_name}} {{user_details.last_name}}</h3>
-									<p><a href="#">{{user_details.webpage}}</a></p>
+								<div class="col-md-8">
+									<h3>{{authorDetails.title}} {{author.first_name}} {{author.last_name}}</h3>
+									<table class="table">
+										<tr>
+											<td><span class="glyphicon glyphicon-earphone"></span></td>
+											<td>{{authorDetails.phone}}</td>
+										</tr>
+										<tr>
+											<td><span class="glyphicon glyphicon-globe"></span></td>
+											<td><a href="{{authorDetails.webpage}}">website</a></td>
+									</table>
 								</div>
 							</div>
 						</div>
