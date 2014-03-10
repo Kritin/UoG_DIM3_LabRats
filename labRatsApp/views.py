@@ -153,6 +153,9 @@ def profile(request,username):
 
 	userDetail = LabRatUser.objects.filter(user = current_user)[0]
 	experiment = Experiment.objects.filter(user = userDetail)
+	ratDetail = None
+	if(userDetail.userType == "rat"):
+		ratDetail = DemographicsSurvey.objects.filter(user = userDetail)[0]
 
 	'''
 	if userDetail.userType == "experimenter":
@@ -160,7 +163,7 @@ def profile(request,username):
 	else:
 		return render_to_response('labRatsApp/RatProfile.html', {'user' : current_user,'userDetail' : userDetail }, context)		
 	'''
-	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetail, "experiments": experiment}, context)
+	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetail, "experiments": experiment, "ratDetails":ratDetail}, context)
 
 @login_required
 def createExperiment(request,username):

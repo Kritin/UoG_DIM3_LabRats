@@ -19,9 +19,9 @@
 				<li>Phone Number : {{userDetail.phone}}</li>
 				<li>User Type : {{userDetail.userType}}</li>
 				<li>Web Page : {{userDetail.webpage}}</li>
-				<li>School : {{userDetail.school}}</li>
-				<li>Age : {{userDetail.age}}</li>
-				<a href="/labRatsApp/editUserDetail/"> <button> Edit</button> </a>
+				<!--<li>School : {{userDetail.school}}</li>
+				<li>Age : {{userDetail.age}}</li>-->
+				<a href="/labRatsApp/editProfile/"> <button> Edit</button> </a>
 				
 			</ul>
 			<a href="/labRatsApp/"> <button> Back to Homepage</button> </a>
