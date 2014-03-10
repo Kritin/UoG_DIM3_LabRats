@@ -16,7 +16,8 @@ def index(request):
     #user_detail = User.objects.all()
     experiments = Experiment.objects.order_by("-experimentID")[:5]
     for e in experiments:
-    	e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
+		e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
+		e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
 
     return render_to_response('labRatsApp/index.html', {'experiments' : experiments}, context)
 
@@ -151,11 +152,16 @@ def profile(request,username):
 	if current_user.username !=  user.username:
 		return HttpResponse(content="Access to this profile is forbidden.", status=403)
 
-	userDetail = LabRatUser.objects.filter(user = current_user)[0]
-	experiment = Experiment.objects.filter(user = userDetail)
-	ratDetail = None
-	if(userDetail.userType == "rat"):
-		ratDetail = DemographicsSurvey.objects.filter(user = userDetail)[0]
+	userDetails = LabRatUser.objects.filter(user = current_user)[0]
+
+	experiments = Experiment.objects.filter(user = userDetails)
+	for e in experiments:
+		e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
+		e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
+
+	ratDetails = None
+	if(userDetails.userType == "rat"):
+		ratDetails = DemographicsSurvey.objects.filter(user = userDetails)[0]
 
 	'''
 	if userDetail.userType == "experimenter":
@@ -163,7 +169,7 @@ def profile(request,username):
 	else:
 		return render_to_response('labRatsApp/RatProfile.html', {'user' : current_user,'userDetail' : userDetail }, context)		
 	'''
-	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetail, "experiments": experiment, "ratDetails":ratDetail}, context)
+	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetails, "experiments": experiments, "ratDetails":ratDetails}, context)
 
 @login_required
 def createExperiment(request,username):
@@ -210,6 +216,7 @@ def experimentPage(request,expId):
 	# Retrieve experiment details
 	try:
 		experimentDetails = Experiment.objects.get(experimentID=expId)
+		experimentDetails.percent_full = ( experimentDetails.num_of_participants * 100 ) / experimentDetails.max_participants
 	except:
 		return HttpResponse("Experiment " + expId + " does not exist.", status=404)
 

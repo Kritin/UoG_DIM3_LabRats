@@ -35,7 +35,7 @@ class Experiment(models.Model):
     reward = models.IntegerField()
     max_participants = models.IntegerField()
     num_of_participants = models.IntegerField(default="0")
-    tags = models.CharField() # sequence of comma delimited words
+    tags = models.TextField() # sequence of comma delimited words
 
     def __unicode__(self):
         return str(self.experimentID)

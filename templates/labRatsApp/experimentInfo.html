@@ -9,27 +9,23 @@
 	<div id="collapse{{e}}" class="panel-collapse collapse">
 		<div class="panel-body">
 			<!-- Experiment description -->
-			<p>{{e.description}}</p>
+			<p>{{e.description_short}}</p>
 			
 			<div class="row">
 				<!-- Experiment requirements -->
 				<div class="col-md-6">
-					<div class="well well-sm">
-						<h4>Requirements</h4>
-						
-						<p>{{e.requirements}}</p>
-					</div>
-				</div>
-				
-				<div class="col-md-6">
-					<h3 class="pull-right"><span class="glyphicon glyphicon-gbp"></span> {{e.reward}}</h3>
-					
-					<div class="clearfix"></div>
-					
 					Participants: {{e.num_of_participants}}/{{e.max_participants}}
 					<div class="progress">
 						<div class="progress-bar" role="progressbar" aria-valuenow="{{e.num_of_participants}}" aria-valuemin="0" aria-valuemax="{{e.max_participants}}" style="width: {{e.percent_full}}%"></div>
 					</div>
+				</div>
+				
+				<div class="col-md-6">
+					<h3 class="pull-right well well-sm">Reward: <span class="glyphicon glyphicon-gbp"></span> {{e.reward}}</h3>
+					
+					<p class="pull-right"><strong>Tags:</strong> {{e.tags}}</p>
+
+					<div class="clearfix"></div>
 				</div>						
 			</div>
 		</div>
