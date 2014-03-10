@@ -34,17 +34,21 @@
 							<td>{{user.email}}</td>
 						</tr>
 						<tr>
-							<td>Age</td>
-							<td>{{userDetails.age}}</td>
-						</tr>
-						<tr>
 							<td>Role</td>
 							<td>{{userDetails.userType}}</td>
 						</tr>
-						<tr>
-							<td>School</td>
-							<td>{{userDetails.school}}</td>
-						</tr>
+						<!--% if user.isRat % -->
+						{% if userDetails.userType = "rat" %}
+						
+							<tr>
+								<td>Age</td>
+								<td>{{ratDetails.age}}</td>
+							</tr>
+							<tr>
+								<td>School</td>
+								<td>{{ratDetails.school}}</td>
+							</tr>						
+						{% endif %}
 						<tr>
 							<td>Website</td>
 							<td><a href="#">{{userDetails.webpage}}</a></td>
@@ -56,7 +60,8 @@
 		
 		<div class="col-md-9">
 			<ul class="nav nav-tabs nav-justified">
-				{% if user.isRat %}
+				<!--% if user.isRat % -->
+				{% if userDetails.userType = "rat" %}
 					<li class="active"><a href="#currentExperiments" data-toggle="tab">Current Experiments</a></li>
 					<li><a href="#bids" data-toggle="tab">Current Bids</a></li>
 					<li><a href="#history" data-toggle="tab">History</a></li>
@@ -70,7 +75,8 @@
 			
 			<!-- TAB  CONTENTS -->
 			<div class="tab-content">
-				{% if user.isRat %}
+				<!-- if user.isRat -->
+				{% if userDetails.userType = "rat" %}
 					<!-- Current Experiments -->
 					<div class="tab-pane active" id="currentExperiments">
 						{% for e in currentExperiments %}

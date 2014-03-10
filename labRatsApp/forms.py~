@@ -1,9 +1,5 @@
 from django import forms
-from labRatsApp.models import LabRatUser,User,Experiment
-
-typee = [('rat','Rat'),('experimenter','Experimenter')]
-
-
+from labRatsApp.models import LabRatUser, User, DemographicsSurvey, Experiment
 
 class UserForm(forms.ModelForm):
 
@@ -13,20 +9,29 @@ class UserForm(forms.ModelForm):
 		model = User
 		fields = ('username', 'password','first_name','last_name','email')
 
+class UserDetailsForm(forms.ModelForm):
+	title = forms.ChoiceField(widget=forms.Select(), choices=[('mr','Mr.'), ('mrs','Mrs.'), ('miss', 'Miss'), ('dr', 'Dr.'), ('prof', 'Prof.')])
+	userType = forms.ChoiceField(widget=forms.RadioSelect(),choices=[('rat','Rat'), ('experimenter','Experimenter')])
+	class Meta:
+		model = LabRatUser
+		fields = ('title', 'phone', 'picture', 'userType', 'webpage')
+
+class LabRatDetailsForm(forms.ModelForm):
+	sex = forms.ChoiceField(widget=forms.RadioSelect(), choices=[('m', 'M'), ('f', 'F')])
+	educationLevel = forms.ChoiceField(widget=forms.Select(), choices=[('primary', 'Primary School'), ('secondary school', 'Secondary School'), ('undergraduate', 'Undergraduate'), ('postgraduate', 'Postgraduate')])
+
+	class Meta:
+		model = DemographicsSurvey
+		fields = ('school', 'age', 'sex', 'firstLanguage', 'country', 'educationLevel')
+
+'''
 class UserForm2(forms.ModelForm):
- 	#username = forms.CharField(max_length = 128)
- 	#title = forms.CharField(max_length=128) 
- 	#name = forms.CharField(max_length = 128)
- 	#school = forms.CharField(max_length = 128)
- 	#phone = forms.IntegerField()
-    #userType = forms.MultipleChoiceField(widget=forms.RadioSelect,choices=('Experimenter','Rat'))
-	userType = forms.ChoiceField(widget=forms.RadioSelect(),choices = typee)
- 	#webpage = forms.URLField(max_length=200)
-    #picture = forms.ImageField(upload_to='/users/level3/2107613s/Desktop/LabRats', blank=True)
+	userType = forms.ChoiceField(widget=forms.RadioSelect(),choices=[('rat','Rat'),('experimenter','Experimenter')])
 
 	class Meta:
 		model = LabRatUser
-		fields = ( 'title','phone','webpage','school','age','picture','userType')
+		fields = ('title','phone','webpage','school','age','picture','userType')
+'''
 
 class ExperimentForm(forms.ModelForm):
 
@@ -60,7 +65,18 @@ User.objects.all().filter(email=self.initial['email'])[0]))
 		fields = ('first_name','last_name','email')
 
 
+class EditLabRatUserForm(forms.ModelForm):
+	def __init__(self,*args,**kwargs):
+		super(EditLabRatUserForm,self).__init__(*args,**kwargs)
+		#self.fields.insert(len(self.fields)-1, 'first_name',forms.ModelChoiceField(queryset=User.objects.filter(first_name=self.initial['first_name'])))
 
+
+	class Meta:
+		model = LabRatUser
+		fields = ('title','phone','webpage')
+
+'''
+# Original class
 class EditLabRatUserForm(forms.ModelForm):
 	def __init__(self,*args,**kwargs):
 		super(EditLabRatUserForm,self).__init__(*args,**kwargs)
@@ -70,6 +86,5 @@ class EditLabRatUserForm(forms.ModelForm):
 	class Meta:
 		model = LabRatUser
 		fields = ('title','phone','webpage','school','age')
-
-
+'''
 

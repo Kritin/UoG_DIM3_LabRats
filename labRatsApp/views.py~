@@ -2,8 +2,9 @@ from django.http import HttpResponse,HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 
-from labRatsApp.models import LabRatUser,Experiment
-from labRatsApp.forms import UserForm,UserForm2,ExperimentForm,EditUserForm,EditLabRatUserForm
+from labRatsApp.models import LabRatUser, Experiment, ParticipateIn, DemographicsSurvey
+from labRatsApp.forms import UserForm, UserDetailsForm, LabRatDetailsForm
+from labRatsApp.forms import ExperimentForm, EditUserForm, EditLabRatUserForm
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -36,7 +37,7 @@ def editUserDetail(request):
             		print user_form.errors,user_form2.errors
 
 	else:	
-		LabUser = LabRatUser.objects.all().filter(user = request.user)[0]
+		LabUser = LabRatUser.objects.filter(user = request.user)[0]
 
 		user_form = EditUserForm(initial = {'first_name':request.user.first_name,'last_name':request.user.last_name,'email':request.user.email})
 
@@ -44,36 +45,56 @@ def editUserDetail(request):
 
 	return render_to_response('labRatsApp/signUp.html', {'user_form' : user_form,'user_form2' : user_form2, 'type':'Edit','url':'/labRatsApp/editProfile/'}, context)
 
-
 def signUp(request):
+	# Discourage logged in users from creating accounts
+	if request.user.is_authenticated():
+		return HttpResponseRedirect("/labRatsApp/")
+
 	context = RequestContext(request)
 	registered = False
-	if request.method == 'POST':
-		user_form = UserForm(data=request.POST)
-		user_form2 = UserForm2(data=request.POST)
-		if user_form.is_valid() and user_form2.is_valid():
-			user = user_form.save()
 
+	# Form has been submitted
+	if request.method == "POST":
+		userForm = UserForm(data=request.POST)
+		userDetailsForm = UserDetailsForm(data=request.POST)
+		labRatDetailsForm = LabRatDetailsForm(data=request.POST)
+
+		# Check type of user
+		userHasValidDetails = userDetailsForm.is_valid()
+		isRat = (userDetailsForm.cleaned_data.get('userType') == "rat")
+
+		# Form data is valid
+		if userForm.is_valid() and userHasValidDetails and ((isRat and labRatDetailsForm.is_valid()) or not isRat ):
+			user = userForm.save()
 			user.set_password(user.password)
-            		user.save()
+			user.save()
 
-			user2 = user_form2.save(commit=False)
-           		user2.user = user
+			userDetails = userDetailsForm.save(commit=False)
+			userDetails.user = user
 
 			if 'picture' in request.FILES:
-				user2.picture = request.FILES['picture']
+				userDetails.picture = request.FILES['picture']
 
-			user2.save()
+			userDetails.save()
+
+			if(isRat):
+				labRatDetails = labRatDetailsForm.save(commit=False)
+				labRatDetails.user = userDetails
+				labRatDetails.save()
+
 			registered = True
-		else:
-			print user_form.errors,user_form2.errors
-	else:
-		user_form = UserForm()
-		user_form2 = UserForm2()
-		
 
-	return render_to_response('labRatsApp/signUp.html', {'user_form' : user_form,'user_form2' : user_form2 , 'registered' : registered,'type':'Register','url':"/labRatsApp/register/"}, context)
-    
+		# Form data is invalid
+		else:
+			print userForm.errors, userDetailsForm.errors, labRatDetailsForm.errors
+
+	# Form has not been submitted
+	else:
+		userForm = UserForm()
+		userDetailsForm = UserDetailsForm()
+		labRatDetailsForm = LabRatDetailsForm()
+
+	return render_to_response('labRatsApp/register.html', {'registered': registered, 'userForm': userForm, 'userDetailsForm': userDetailsForm, 'labRatDetailsForm': labRatDetailsForm}, context)
 
 def user_login(request):
 	context = RequestContext(request)
@@ -119,7 +140,7 @@ def about(request):
 def profile(request,username):
 	context = RequestContext(request)
 	try:
-		user = User.objects.all().filter(username = username)[0]
+		user = User.objects.filter(username = username)[0]
 	except :
 		return HttpResponse(content="User not found.", status=404)
 
@@ -128,8 +149,11 @@ def profile(request,username):
 	if current_user.username !=  user.username:
 		return HttpResponse(content="Access to this profile is forbidden.", status=403)
 
-	userDetail = LabRatUser.objects.all().filter(user = current_user)[0]
-	experiment = Experiment.objects.all().filter(user = userDetail)
+	userDetail = LabRatUser.objects.filter(user = current_user)[0]
+	experiment = Experiment.objects.filter(user = userDetail)
+	ratDetail = None
+	if(userDetail.userType == "rat"):
+		ratDetail = DemographicsSurvey.objects.filter(user = userDetail)[0]
 
 	'''
 	if userDetail.userType == "experimenter":
@@ -137,7 +161,7 @@ def profile(request,username):
 	else:
 		return render_to_response('labRatsApp/RatProfile.html', {'user' : current_user,'userDetail' : userDetail }, context)		
 	'''
-	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetail, "experiments": experiment}, context)
+	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetail, "experiments": experiment, "ratDetails":ratDetail}, context)
 
 @login_required
 def createExperiment(request,username):
@@ -146,8 +170,8 @@ def createExperiment(request,username):
 	create = False
 	if request.method == 'POST':
 		if username is not None:
-	            user = User.objects.all().filter(username = username)[0]  	
-		    LabUser = LabRatUser.objects.all().filter(user = user)[0]
+	            user = User.objects.filter(username = username)[0]  	
+		    LabUser = LabRatUser.objects.filter(user = user)[0]
 
 		    if user.is_active:
 			experiment_form = ExperimentForm(data=request.POST)
@@ -168,8 +192,8 @@ def createExperiment(request,username):
 
 		
 	else:
-		user = User.objects.all().filter(username = username)[0]
-		LabUser = LabRatUser.objects.all().filter(user = user)[0]
+		user = User.objects.filter(username = username)[0]
+		LabUser = LabRatUser.objects.filter(user = user)[0]
 		if request.user.username != user.username:
 			return HttpResponse("Hacker!! , This is not your username.")
 		elif LabUser.userType == "rat":
@@ -178,15 +202,56 @@ def createExperiment(request,username):
 			experiment_form = ExperimentForm()
 			return render_to_response('labRatsApp/createExperiment.html', {'experiment_form' : experiment_form,'username':username}, context)
 
-
 def experimentPage(request,expId):
 	context = RequestContext(request)
-	if request.method == 'POST':
-		return HttpResponse("What is this")
+
+	# Retrieve experiment details
+	try:
+		experimentDetails = Experiment.objects.get(experimentID=expId)
+	except:
+		return HttpResponse("Experiment " + expId + " does not exist.", status=404)
+
+	# Retrieve author details
+	author = User.objects.get(username=experimentDetails.user)
+	authorDetails = LabRatUser.objects.get(user=author)
+
+	currentUser = {}
+
+	# Check if current user is the author
+	if request.user.username ==  author.username:
+		currentUser["isOwner"] = True
+
+		#Get list of bidding users
+		biddingUsers = DemographicsSurvey.objects.filter(user__participatein__experimentID=expId).filter(user__participatein__status="bidding")
 	else:
-		experiment_detail = Experiment.objects.all().filter(experimentID = expId)[0]
-		return render_to_response('labRatsApp/experiment.html', {'experiment_details' : experiment_detail}, context)
-	 
+		currentUser["isOwner"] = False
+		biddingUsers = {}
+
+	# Render template
+	return render_to_response('labRatsApp/experiment.html', {'experimentDetails' : experimentDetails, 'currentUser': currentUser, 'author': author, 'authorDetails': authorDetails, 'biddingUsers': biddingUsers}, context)
+	
+@login_required
+def acceptUser(request, eID, uID):
+	# Check if experiment is valid
+	try:
+		user = User.objects.filter(experiment__experimentID=eID)[0]
+	except:
+		return HttpResponse("{'success': false}", content_type="application/json", status=404)
+
+	# Check if current user owns experiment
+	if request.user.username != user["username"]:
+		return HttpResponse("{'success': false}", content_type="application/json", status=403)
+
+	# Set ParticipateIn status and date
+
+	# Create response
+
+	return HttpResponse("{'success': true}", content_type="application/json")
+
+@login_required
+def rejectUser(request, eID, uID):
+	return HttpResponse("Hi")
+
 def searchExperiment(request):
 	context = RequestContext(request)
 	if request.method == 'POST':
@@ -197,16 +262,3 @@ def searchExperiment(request):
 			return HttpResponseRedirect('/labRatsApp/experiment/'+str(experiments.experimentID)+'/')
 		except:
 			return HttpResponseRedirect('/labRatsApp/experiment/0/')
-			
-
-		 
-	 		
-	
-	
-
-
-
-
-
-
-
