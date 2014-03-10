@@ -1,32 +1,30 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>create Form</title>
-    </head>
+{% extends 'labRatsApp/base.html' %}
 
-    <body>
-       <!-- <h1>Register with Labrats</h1> -->
+{% block title %}{{user.username}}'s create experimeent Page{% endblock %}
 
-		<form id="experiment_form" method = "post" action = "/labRatsApp/createExperiment/{{username}}/" enctype="multipart/form-data">
+
+{% block scripts %}
+		<!---- Should show experiment_form.rewardAmount here-->
+
+{% endblock %}
+
+
+{% block mainbody %}
+
+
+	<form id="experiment_form" method = "post" action = "/labRatsApp/createExperiment/{{username}}/" enctype="multipart/form-data">>
 		
-			{% csrf_token %}
-			{{ experiment_form.as_p }}
-		
-			
-			<!--
-			<li>{{ experiment_form.title}}</li>
-			<li>{{ experiment_form.description}}</li>
-			<li>{{ experiment_form.requirements}}</li>
-			<li>{{ experiment_form.max_participants}}</li>
-			<li>{{ experiment_form.date_start}}</li>
-			<li>{{ experiment_form.date_end}}</li>
-			<li>{{ experiment_form.tag}}</li>
-			<li>{{ experiment_form.rewardType}}</li>
-			<li>{{ experiment_form.rewardAmount}}</li> -->
+		{% csrf_token %}
+		{{ experiment_form.as_p}}
+		<div id="qwe" style="display: none">
+			{{ experiment_form.rewardAmount }}
+		</div>
 
-			<input type="submit" name="submit" value="create" />
-		</form>
-		<a href="/labRatsApp/"><button> Back </button></a>
-    </body>
-</html>
+		<input class="btn btn-success" type="submit" name="submit" value="create" />
+	</form>
+	
+	
+{% endblock %}
+      
+
 

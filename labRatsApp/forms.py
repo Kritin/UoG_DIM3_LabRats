@@ -40,6 +40,7 @@ class ExperimentForm(forms.ModelForm):
 
         date_start  = forms.DateField(widget=forms.widgets.DateInput(format="%m/%d/%Y")) 
 	date_end = forms.DateField(widget=forms.widgets.DateInput(format="%m/%d/%Y")) 
+	rewardAmount = forms.IntegerField(required=False, widget=forms.HiddenInput(),initial=123)
 	class Meta:
 		model = Experiment
 		fields = ( 'title','description','requirements','max_participants','date_start','date_end','tags','rewardType','rewardAmount')
@@ -94,4 +95,7 @@ class EditLabRatUserForm(forms.ModelForm):
 		model = LabRatUser
 		fields = ('title','phone','webpage','school','age')
 '''
+
+
+
 
