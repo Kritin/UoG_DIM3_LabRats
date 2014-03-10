@@ -1,3 +1,5 @@
+import datetime, json
+
 from django.http import HttpResponse,HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
@@ -219,7 +221,7 @@ def experimentPage(request,expId):
 		currentUser["isOwner"] = True
 
 		#Get list of bidding users
-		biddingUsers = DemographicsSurvey.objects.filter(user__participatein__experimentID=expId).filter(user__participatein__status="bidding")
+		biddingUsers = DemographicsSurvey.objects.values("user__user__username", "school", "firstLanguage", "age", "educationLevel", "sex", "country").filter(user__participatein__experimentID=expId).filter(user__participatein__status="bidding")
 	else:
 		currentUser["isOwner"] = False
 		biddingUsers = {}
@@ -228,26 +230,38 @@ def experimentPage(request,expId):
 	return render_to_response('labRatsApp/experiment.html', {'experimentDetails' : experimentDetails, 'currentUser': currentUser, 'author': author, 'authorDetails': authorDetails, 'biddingUsers': biddingUsers}, context)
 	
 @login_required
-def acceptUser(request, eID, uID):
+def modifyParticipantStatus(request, eID, status, username):
+	# Check if status is valid
+	if status != "accept" and status != "reject":
+		return HttpResponse("{'successful': false}", content_type="application/json", status=400)
+	
 	# Check if experiment is valid
 	try:
-		user = User.objects.filter(experiment__experimentID=eID)[0]
+		user = User.objects.get(labratuser__experiment__experimentID=eID)
 	except:
-		return HttpResponse("{'success': false}", content_type="application/json", status=404)
+		return HttpResponse("{'successful': false}", content_type="application/json", status=404)
 
 	# Check if current user owns experiment
-	if request.user.username != user["username"]:
-		return HttpResponse("{'success': false}", content_type="application/json", status=403)
+	if request.user.username != user.username:
+		return HttpResponse("{'successful': false}", content_type="application/json", status=403)
 
 	# Set ParticipateIn status and date
+	try:
+		participant = ParticipateIn.objects.get(experimentID=eID, user__user__username=username)
+		if status == "accept":
+			participant.status = "accepted"
+		else:
+			participant.status = "rejected"
+		participant.date = datetime.date.today()
+		participant.save()
+	# User is not a participant in the experiment
+	except:
+		return HttpResponse("{'successful': false }", content_type="application/json", status=404)
 
-	# Create response
-
-	return HttpResponse("{'success': true}", content_type="application/json")
-
-@login_required
-def rejectUser(request, eID, uID):
-	return HttpResponse("Hi")
+	response = {}
+	response["successful"] = True
+	response["data"] = DemographicsSurvey.objects.values("user__user__username", "school", "firstLanguage", "age", "educationLevel", "sex", "country").get(user__participatein__user=participant.user)
+	return HttpResponse(json.dumps(response), content_type="application/json")
 
 def searchExperiment(request):
 	context = RequestContext(request)

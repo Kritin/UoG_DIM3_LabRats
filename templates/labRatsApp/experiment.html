@@ -1,6 +1,12 @@
 {% extends 'labRatsApp/base.html' %}
 
+{% load static %}
+
 {% block title %}{{experiment.title}}{% endblock %}
+
+{% block scripts %}
+	<script src="{% static 'js/experiment.js' %}"></script>
+{% endblock %}
 
 {% block mainbody %}
 
@@ -92,12 +98,14 @@
 
 			<!-- Participants -->
 			<div class="tab-pane" id="participants">
-				<table class="table table-hover">
+				<table class="table table-hover participants-table">
 					<thead>
 						<th>Username</th>
 						<th>Age</th>
 						<th>Sex</th>
-						<th>School</th>
+						<th>Education</th>
+						<th>First Language</th>
+						<th>Country</th>
 					</thead>
 					<tbody>
 						<tr>
@@ -153,20 +161,23 @@
 						<th>Username</th>
 						<th>Age</th>
 						<th>Sex</th>
-						<th>School</th>
-						<th></th>
+						<th>Education</th>
+						<th>First Language</th>
+						<th>Country</th>
 					</thead>
 					<tbody>
 						{% for user in biddingUsers %}
-							<tr>
-								<td>username goes here...</td>
+							<tr class="bid-row">
+								<td>{{ user.user__user__username }}</td>
 								<td>{{ user.age }}</td>
 								<td>{{ user.sex }}</td>
-								<td>{{ user.school }}</td>
+								<td>{{ user.educationLevel }}</td>
+								<td>{{ user.firstLanguage }}</td>
+								<td>{{ user.country }}</td>
 								<td>
 									<div class="pull-right">
-										<button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button> 
-										<button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
+										<button class="btn btn-success paccept" data-user="{{ user.user__user__username }}"><span class="glyphicon glyphicon-ok"></span></button> 
+										<button class="btn btn-danger preject" data-user="{{ user.user__user__username }}"><span class="glyphicon glyphicon-remove"></span></button>
 									</div>
 								</td>
 							</tr>
