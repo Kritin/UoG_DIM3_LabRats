@@ -16,7 +16,9 @@
 					<option>5</option>
 				</select>
 			</div>
+
 			<!-- Categories panel-->
+			<!--
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title">Categories</h3>
@@ -27,16 +29,21 @@
 					<a class="list-group-item" href="#">Item 3</a>
 				</div>
 			</div>
+			-->
+
 			<!-- Filters panel-->
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title">Filters</h3>
 				</div>
-				<ul class="list-group">
-					<li class="list-group-item" href="#"><input type="checkbox"> Filter 1</li>
-					<li class="list-group-item" href="#"><input type="checkbox"> Filter 2</li>
-					<li class="list-group-item" href="#"><input type="checkbox"> Filter 3</li>
-				</ul>
+
+				<div class="panel-body">
+					<form method="get" action="">
+						{{ filters.as_p }}
+
+						<input type="submit" value="Update" class="btn btn-success" />
+					</form>
+				</div>
 			</div>
 		</div>		
 		<!-- EXPERIMENTS -->
@@ -70,11 +77,11 @@
 							</div>
 							
 							<div class="col-md-6">
-								<h3 class="pull-right well well-sm">Reward: <span class="glyphicon glyphicon-gbp"></span> {{e.reward}}</h3>
+								<h3 class="pull-right well well-sm">Reward: <span class="glyphicon glyphicon-gbp"></span> {{e.rewardAmount}}</h3>
 								
-								<p class="pull-right"><strong>Tags:</strong> {{e.tags}}</p>
-
 								<div class="clearfix"></div>
+
+								<p class="pull-right"><strong>Tags:</strong> {{e.tags}}</p>
 							</div>						
 						</div>
 					</div> <!-- end of experiment body -->

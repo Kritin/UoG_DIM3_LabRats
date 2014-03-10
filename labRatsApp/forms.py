@@ -1,5 +1,5 @@
 from django import forms
-from labRatsApp.models import LabRatUser, User, DemographicsSurvey, Experiment
+from labRatsApp.models import LabRatUser, User, DemographicsSurvey, Experiment, Requirement
 
 class UserForm(forms.ModelForm):
 
@@ -42,8 +42,12 @@ class ExperimentForm(forms.ModelForm):
 	date_end = forms.DateField(widget=forms.widgets.DateInput(format="%m/%d/%Y")) 
 	class Meta:
 		model = Experiment
-		fields = ( 'title','description','requirements','max_participants','date_start','date_end','tag','rewardType','rewardAmount')
+		fields = ( 'title','description','requirements','max_participants','date_start','date_end','tags','rewardType','rewardAmount')
 
+class RequirementsForm(forms.ModelForm):
+	class Meta:
+		model = Requirement
+		fields = ('ageMin', 'ageMax', 'sex', 'firstLanguage', 'educationLevel')
 
 class EditUserForm(forms.ModelForm):
 	def __init__(self,*args,**kwargs):

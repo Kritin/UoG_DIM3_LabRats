@@ -36,13 +36,25 @@ class Experiment(models.Model):
     num_of_participants = models.IntegerField(default= "0")
     date_start = models.DateField(null=False)
     date_end = models.DateField(null=False)
-    tag  = models.TextField() 
+    tags = models.TextField() 
     rewardType = models.CharField(max_length=128)
     rewardAmount = models.CharField(max_length=128)
     status = models.CharField(max_length=128, default= "open")
 
     def __unicode__(self):
         return str(self.experimentID)
+
+class Requirement(models.Model):
+    experiment = models.OneToOneField(Experiment, primary_key=True)
+    ageMin = models.IntegerField(null=True, blank=True)
+    ageMax = models.IntegerField(null=True, blank=True)
+    sex = models.CharField(max_length=1, null=True, blank=True)
+    firstLanguage = models.CharField(max_length=128, null=True, blank=True)
+    educationLevel = models.CharField(max_length=128, null=True, blank=True)
+    #location = models.CharField(max_length=128) This should be included as well
+
+    def __unicode__(self):
+        return str(self.experiment.experimentID)
 
 #weak entity
 class Timeslot(models.Model):
@@ -53,7 +65,7 @@ class Timeslot(models.Model):
     time_to  = models.TimeField(null=False)
 
     def __unicode__(self):
-	return str(self.timeslot)
+	   return str(self.timeslot)
 
 '''
 #weak entity
@@ -107,7 +119,7 @@ class EnrolIn(models.Model):
     timeslotID = models.ForeignKey(Timeslot)
 
     def __unicode__(self):
-	return u'%s %s' % (self.user,self.timeslotID)
+	   return u'%s %s' % (self.user,self.timeslotID)
 
     class Meta:
        unique_together = (("user", "timeslotID"),)

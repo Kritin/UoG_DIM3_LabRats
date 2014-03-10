@@ -6,20 +6,47 @@ from django.shortcuts import render_to_response
 
 from labRatsApp.models import LabRatUser, Experiment, ParticipateIn, DemographicsSurvey
 from labRatsApp.forms import UserForm, UserDetailsForm, LabRatDetailsForm
-from labRatsApp.forms import ExperimentForm, EditUserForm, EditLabRatUserForm
+from labRatsApp.forms import ExperimentForm, RequirementsForm
+from labRatsApp.forms import EditUserForm, EditLabRatUserForm
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 def index(request):
-    context = RequestContext(request)
-    #user_detail = User.objects.all()
-    experiments = Experiment.objects.order_by("-experimentID")[:5]
-    for e in experiments:
+	context = RequestContext(request)
+
+	experiments = Experiment.objects.filter(status="open")#.order_by("date_end")
+
+	if(request.GET):
+		filters = RequirementsForm(data=request.GET)
+
+		if filters.is_valid():
+			#apply filters to query
+			if filters.cleaned_data.get("ageMin") is not None and filters.cleaned_data.get("ageMin") != "":
+				experiments = experiments.exclude(requirement__ageMin__lt=filters.cleaned_data.get("ageMin"))
+
+			if filters.cleaned_data.get("ageMax") is not None and filters.cleaned_data.get("ageMax") != "":
+				experiments = experiments.exclude(requirement__ageMax__gt=filters.cleaned_data.get("ageMax"))
+			
+			if filters.cleaned_data.get("sex") is not None and filters.cleaned_data.get("sex") != "":
+				experiments = experiments.filter(Q(requirement__sex=filters.cleaned_data.get("sex")) | Q(requirement__sex="") | Q(requirement__sex__isnull=True))
+			
+			if filters.cleaned_data.get("firstLanguage") is not None and filters.cleaned_data.get("firstLanguage") != "":
+				experiments = experiments.filter(Q(requirement__firstLanguage=filters.cleaned_data.get("firstLanguage")) | Q(requirement__firstLanguage="") | Q(requirement__firstLanguage__isnull=True))
+
+			if filters.cleaned_data.get("educationLevel") is not None and filters.cleaned_data.get("educationLevel") != "":
+				experiments = experiments.filter(Q(requirement__educationLevel=filters.cleaned_data.get("educationLevel")) | Q(requirement__educationLevel="") | Q(requirement__educationLevel__isnull=True))
+		else:
+			print filters.errors
+	else:
+		filters = RequirementsForm()
+
+	for e in experiments:
 		e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
 		e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
 
-    return render_to_response('labRatsApp/index.html', {'experiments' : experiments}, context)
+	return render_to_response('labRatsApp/index.html', {'experiments' : experiments, 'filters': filters}, context)
 
 @login_required
 def editUserDetail(request):
