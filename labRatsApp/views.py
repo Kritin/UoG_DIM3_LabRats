@@ -324,7 +324,7 @@ def modifyParticipantStatus(request, eID, status, username):
 
 	response = {}
 	response["successful"] = True
-	response["data"] = DemographicsSurvey.objects.values("user__user__username", "school", "firstLanguage", "age", "educationLevel", "sex", "country").get(user__participatein__user=participant.user)
+	response["data"] = DemographicsSurvey.objects.values("user__user__username", "school", "firstLanguage", "age", "educationLevel", "sex", "country").get(user__participatein__user=participant.user, user__participatein__experimentID=eID)
 	return HttpResponse(json.dumps(response), content_type="application/json")
 
 def searchExperiment(request):
