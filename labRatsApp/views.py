@@ -284,14 +284,18 @@ def experimentPage(request,expId):
 	if request.user.username ==  author.username:
 		currentUser["isOwner"] = True
 
+		#Get list of accepted users
+		acceptedUsers = DemographicsSurvey.objects.values("user__user__username", "school", "firstLanguage", "age", "educationLevel", "sex", "country").filter(user__participatein__experimentID=expId, user__participatein__status="accepted")
+
 		#Get list of bidding users
 		biddingUsers = DemographicsSurvey.objects.values("user__user__username", "school", "firstLanguage", "age", "educationLevel", "sex", "country").filter(user__participatein__experimentID=expId, user__participatein__status="bidding")
 	else:
 		currentUser["isOwner"] = False
+		acceptedUser = {}
 		biddingUsers = {}
 
 	# Render template
-	return render_to_response('labRatsApp/experiment.html', {'experimentDetails' : experimentDetails, 'currentUser': currentUser, 'author': author, 'authorDetails': authorDetails, 'biddingUsers': biddingUsers}, context)
+	return render_to_response('labRatsApp/experiment.html', {'experimentDetails' : experimentDetails, 'currentUser': currentUser, 'author': author, 'authorDetails': authorDetails, 'acceptedUsers': acceptedUsers, 'biddingUsers': biddingUsers}, context)
 	
 @login_required
 def modifyParticipantStatus(request, eID, status, username):
