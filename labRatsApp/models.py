@@ -68,10 +68,8 @@ class HaveTags(models.Model):
 
     class Meta:
        unique_together = (("experimentID", "tag"),)
-    
 
-    
-
+'''
 # M2M between User and Experiment
 class BidFor(models.Model):
     user = models.ForeignKey(LabRatUser)
@@ -84,12 +82,14 @@ class BidFor(models.Model):
 
     class Meta:
         unique_together = (("user", "experimentID"),)
-
+'''
 
 # M2M between User and Experiment
 class ParticipateIn(models.Model):
     user = models.ForeignKey(LabRatUser)
     experimentID = models.ForeignKey(Experiment)
+    status = models.CharField(max_length=128) # bidding / accepted / rejected
+    date = models.DateField(null=False) # date of last status change
 
     def __unicode__(self):
         return u'%s %s' % (self.user,self.experimentID)

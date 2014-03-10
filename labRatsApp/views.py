@@ -2,7 +2,7 @@ from django.http import HttpResponse,HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 
-from labRatsApp.models import LabRatUser,Experiment
+from labRatsApp.models import LabRatUser, Experiment, ParticipateIn, DemographicsSurvey
 from labRatsApp.forms import UserForm, UserDetailsForm, LabRatDetailsForm
 from labRatsApp.forms import ExperimentForm, EditUserForm, EditLabRatUserForm
 from django.contrib.auth import authenticate, login,logout
@@ -37,7 +37,7 @@ def editUserDetail(request):
             		print user_form.errors,user_form2.errors
 
 	else:	
-		LabUser = LabRatUser.objects.all().filter(user = request.user)[0]
+		LabUser = LabRatUser.objects.filter(user = request.user)[0]
 
 		user_form = EditUserForm(initial = {'first_name':request.user.first_name,'last_name':request.user.last_name,'email':request.user.email})
 
@@ -140,7 +140,7 @@ def about(request):
 def profile(request,username):
 	context = RequestContext(request)
 	try:
-		user = User.objects.all().filter(username = username)[0]
+		user = User.objects.filter(username = username)[0]
 	except :
 		return HttpResponse(content="User not found.", status=404)
 
@@ -149,8 +149,8 @@ def profile(request,username):
 	if current_user.username !=  user.username:
 		return HttpResponse(content="Access to this profile is forbidden.", status=403)
 
-	userDetail = LabRatUser.objects.all().filter(user = current_user)[0]
-	experiment = Experiment.objects.all().filter(user = userDetail)
+	userDetail = LabRatUser.objects.filter(user = current_user)[0]
+	experiment = Experiment.objects.filter(user = userDetail)
 
 	'''
 	if userDetail.userType == "experimenter":
@@ -167,8 +167,8 @@ def createExperiment(request,username):
 	create = False
 	if request.method == 'POST':
 		if username is not None:
-	            user = User.objects.all().filter(username = username)[0]  	
-		    LabUser = LabRatUser.objects.all().filter(user = user)[0]
+	            user = User.objects.filter(username = username)[0]  	
+		    LabUser = LabRatUser.objects.filter(user = user)[0]
 
 		    if user.is_active:
 			experiment_form = ExperimentForm(data=request.POST)
@@ -189,8 +189,8 @@ def createExperiment(request,username):
 
 		
 	else:
-		user = User.objects.all().filter(username = username)[0]
-		LabUser = LabRatUser.objects.all().filter(user = user)[0]
+		user = User.objects.filter(username = username)[0]
+		LabUser = LabRatUser.objects.filter(user = user)[0]
 		if request.user.username != user.username:
 			return HttpResponse("Hacker!! , This is not your username.")
 		elif LabUser.userType == "rat":
@@ -199,14 +199,34 @@ def createExperiment(request,username):
 			experiment_form = ExperimentForm()
 			return render_to_response('labRatsApp/createExperiment.html', {'experiment_form' : experiment_form,'username':username}, context)
 
-
 def experimentPage(request,expId):
 	context = RequestContext(request)
-	if request.method == 'POST':
-		return HttpResponse("What is this")
+
+	# Retrieve experiment details
+	try:
+		experimentDetails = Experiment.objects.filter(experimentID=expId)[0]
+	except:
+		return HttpResponse("Experiment " + expId + " does not exist.", status=404)
+
+	# Retrieve author details
+	author = User.objects.filter(username=experimentDetails.user)[0]
+	authorDetails = LabRatUser.objects.filter(user=author)[0]
+
+	currentUser = {}
+
+	# Check if current user is the author
+	if request.user.username ==  author.username:
+		currentUser["isOwner"] = True
+
+		#Get list of bidding users
+		#users = ParticipateIn.objects.filter(experimentID=expId)
+		biddingUsers = DemographicsSurvey.objects.filter(user__participatein__experimentID=expId).filter(user__participatein__status="bidding")
 	else:
-		experiment_detail = Experiment.objects.all().filter(experimentID = expId)[0]
-		return render_to_response('labRatsApp/experiment.html', {'experiment_details' : experiment_detail}, context)
+		currentUser["isOwner"] = False
+		biddingUsers = {}
+
+	# Render template
+	return render_to_response('labRatsApp/experiment.html', {'experimentDetails' : experimentDetails, 'currentUser': currentUser, 'author': author, 'authorDetails': authorDetails, 'biddingUsers': biddingUsers}, context)
 	 
 def searchExperiment(request):
 	context = RequestContext(request)

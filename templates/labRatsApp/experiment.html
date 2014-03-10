@@ -6,7 +6,7 @@
 
 	<!-- TABS -->
 	
-	{% if user.isOwner %}
+	{% if currentUser.isOwner %}
 
 		<ul class="nav nav-tabs nav-justified">
 			<li class="active"><a href="#details" data-toggle="tab">Experiment Information</a></li>
@@ -27,7 +27,7 @@
 					<div class="panel panel-default">
 						<div class="panel-heading">
 							<div class="row">
-								<h4 class="col-md-11 col-xs-8">{{experiment_details.title}}</h4>
+								<h4 class="col-md-11 col-xs-8">{{experimentDetails.title}}</h4>
 								<div class="col-md-1 col-xs-4">
 									{% if user.canBid %}
 										<a class="btn btn-success pull-right">Bid</a>
@@ -44,18 +44,18 @@
 									<div class="well well-sm">
 										<h4>Requirements</h4>
 										
-										<p>{{experiment_details.requirements}}</p>
+										<p>{{experimentDetails.requirements}}</p>
 									</div>
 								</div>
 								
 								<div class="col-md-6">
-									<h3 class="pull-right"><span class="glyphicon glyphicon-gbp"></span> {{experiment_details.reward}}</h3>
+									<h3 class="pull-right"><span class="glyphicon glyphicon-gbp"></span> {{experimentDetails.reward}}</h3>
 									
 									<div class="clearfix"></div>
 									
-									Participants: {{experiment_details.num_of_participants}}/{{experiment_details.max_participants}}
+									Participants: {{experimentDetails.num_of_participants}}/{{experimentDetails.max_participants}}
 									<div class="progress">
-										<div class="progress-bar" role="progressbar" aria-valuenow="{{experiment_details.num_of_participants}}" aria-valuemin="0" aria-valuemax="{{experiment_details.max_participants}}" style="width: {{experiment_details.percent_full}}%"></div>
+										<div class="progress-bar" role="progressbar" aria-valuenow="{{experimentDetails.num_of_participants}}" aria-valuemin="0" aria-valuemax="{{experimentDetails.max_participants}}" style="width: {{experimentDetails.percent_full}}%"></div>
 									</div>
 								</div>						
 							</div>
@@ -88,7 +88,7 @@
 			</div>
 		</div>
 
-		{% if user.isOwner %}
+		{% if currentUser.isOwner %}
 
 			<!-- Participants -->
 			<div class="tab-pane" id="participants">
@@ -157,90 +157,20 @@
 						<th></th>
 					</thead>
 					<tbody>
-						<tr>
-							<td>user1</td>
-							<td>21</td>
-							<td>M</td>
-							<td>University of Glasgow</td>
-							<td>
-								<div class="pull-right">
-									<button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button> 
-									<button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td>sexybeast224</td>
-							<td>24</td>
-							<td>M</td>
-							<td>University of Glasgow</td>
-							<td>
-								<div class="pull-right">
-									<button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button> 
-									<button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td>1337</td>
-							<td>28</td>
-							<td>F</td>
-							<td>University of Strathclyde</td>
-							<td>
-								<div class="pull-right">
-									<button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button> 
-									<button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td>ilovejesus982</td>
-							<td>31</td>
-							<td>M</td>
-							<td>University of Glasgow</td>
-							<td>
-								<div class="pull-right">
-									<button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button> 
-									<button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td>stugxt</td>
-							<td>19</td>
-							<td>M</td>
-							<td>University of Glasgow</td>
-							<td>
-								<div class="pull-right">
-									<button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button> 
-									<button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td>psmith</td>
-							<td>24</td>
-							<td>F</td>
-							<td>University of Glasgow</td>
-							<td>
-								<div class="pull-right">
-									<button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button> 
-									<button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td>oasis</td>
-							<td>23</td>
-							<td>F</td>
-							<td>University of Edinburgh</td>
-							<td>
-								<div class="pull-right">
-									<button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button> 
-									<button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
-								</div>
-							</td>
-						</tr>
+						{% for user in biddingUsers %}
+							<tr>
+								<td>username goes here...</td>
+								<td>{{ user.age }}</td>
+								<td>{{ user.sex }}</td>
+								<td>{{ user.school }}</td>
+								<td>
+									<div class="pull-right">
+										<button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button> 
+										<button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
+									</div>
+								</td>
+							</tr>
+						{% endfor %}
 					</tbody>
 				</table>
 			</div>
