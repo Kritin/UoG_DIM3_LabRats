@@ -1,1 +1,4 @@
 populate_labRats.py~
+labRatsApp.db
+*.pyc
+*~
