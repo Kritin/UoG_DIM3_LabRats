@@ -40,6 +40,7 @@
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> {{ user.username }} <b class="caret"></b></a>
 							<ul class="dropdown-menu">
 								<li><a href="/labRatsApp/profile/{{ user.username }}">Profile</a></li>
+								<li><a href= "/labRatsApp/createExperiment/"+str(user)+"/" >Experiment</a></li>
 								<li><a href="/labRatsApp/editProfile/">Settings</a></li>
 								<li><a href="/labRatsApp/logout/">Log Out</a></li>
 							</ul>
@@ -74,5 +75,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+    {% block scripts %}{% endblock %}
   </body>
 </html>

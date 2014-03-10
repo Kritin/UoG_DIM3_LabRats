@@ -1,3 +1,5 @@
+import datetime, json
+
 from django.http import HttpResponse,HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
@@ -14,7 +16,8 @@ def index(request):
     #user_detail = User.objects.all()
     experiments = Experiment.objects.order_by("-experimentID")[:5]
     for e in experiments:
-    	e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
+		e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
+		e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
 
     return render_to_response('labRatsApp/index.html', {'experiments' : experiments}, context)
 
@@ -149,11 +152,16 @@ def profile(request,username):
 	if current_user.username !=  user.username:
 		return HttpResponse(content="Access to this profile is forbidden.", status=403)
 
-	userDetail = LabRatUser.objects.filter(user = current_user)[0]
-	experiment = Experiment.objects.filter(user = userDetail)
-	ratDetail = None
-	if(userDetail.userType == "rat"):
-		ratDetail = DemographicsSurvey.objects.filter(user = userDetail)[0]
+	userDetails = LabRatUser.objects.filter(user = current_user)[0]
+
+	experiments = Experiment.objects.filter(user = userDetails)
+	for e in experiments:
+		e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
+		e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
+
+	ratDetails = None
+	if(userDetails.userType == "rat"):
+		ratDetails = DemographicsSurvey.objects.filter(user = userDetails)[0]
 
 	'''
 	if userDetail.userType == "experimenter":
@@ -161,7 +169,7 @@ def profile(request,username):
 	else:
 		return render_to_response('labRatsApp/RatProfile.html', {'user' : current_user,'userDetail' : userDetail }, context)		
 	'''
-	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetail, "experiments": experiment, "ratDetails":ratDetail}, context)
+	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetails, "experiments": experiments, "ratDetails":ratDetails}, context)
 
 @login_required
 def createExperiment(request,username):
@@ -200,7 +208,7 @@ def createExperiment(request,username):
 			return HttpResponse("You are not an experimenter")
 		else:
 			experiment_form = ExperimentForm()
-			return render_to_response('labRatsApp/createExperiment.html', {'experiment_form' : experiment_form,'username':username}, context)
+			return render_to_response('labRatsApp/createExperiment.html', {'experiment_form' : experiment_form,'username':username, 'reward':experiment_form.rewardAmount}, context)
 
 def experimentPage(request,expId):
 	context = RequestContext(request)
@@ -208,6 +216,7 @@ def experimentPage(request,expId):
 	# Retrieve experiment details
 	try:
 		experimentDetails = Experiment.objects.get(experimentID=expId)
+		experimentDetails.percent_full = ( experimentDetails.num_of_participants * 100 ) / experimentDetails.max_participants
 	except:
 		return HttpResponse("Experiment " + expId + " does not exist.", status=404)
 
@@ -222,7 +231,7 @@ def experimentPage(request,expId):
 		currentUser["isOwner"] = True
 
 		#Get list of bidding users
-		biddingUsers = DemographicsSurvey.objects.filter(user__participatein__experimentID=expId).filter(user__participatein__status="bidding")
+		biddingUsers = DemographicsSurvey.objects.values("user__user__username", "school", "firstLanguage", "age", "educationLevel", "sex", "country").filter(user__participatein__experimentID=expId).filter(user__participatein__status="bidding")
 	else:
 		currentUser["isOwner"] = False
 		biddingUsers = {}
@@ -231,26 +240,38 @@ def experimentPage(request,expId):
 	return render_to_response('labRatsApp/experiment.html', {'experimentDetails' : experimentDetails, 'currentUser': currentUser, 'author': author, 'authorDetails': authorDetails, 'biddingUsers': biddingUsers}, context)
 	
 @login_required
-def acceptUser(request, eID, uID):
+def modifyParticipantStatus(request, eID, status, username):
+	# Check if status is valid
+	if status != "accept" and status != "reject":
+		return HttpResponse("{'successful': false}", content_type="application/json", status=400)
+	
 	# Check if experiment is valid
 	try:
-		user = User.objects.filter(experiment__experimentID=eID)[0]
+		user = User.objects.get(labratuser__experiment__experimentID=eID)
 	except:
-		return HttpResponse("{'success': false}", content_type="application/json", status=404)
+		return HttpResponse("{'successful': false}", content_type="application/json", status=404)
 
 	# Check if current user owns experiment
-	if request.user.username != user["username"]:
-		return HttpResponse("{'success': false}", content_type="application/json", status=403)
+	if request.user.username != user.username:
+		return HttpResponse("{'successful': false}", content_type="application/json", status=403)
 
 	# Set ParticipateIn status and date
+	try:
+		participant = ParticipateIn.objects.get(experimentID=eID, user__user__username=username)
+		if status == "accept":
+			participant.status = "accepted"
+		else:
+			participant.status = "rejected"
+		participant.date = datetime.date.today()
+		participant.save()
+	# User is not a participant in the experiment
+	except:
+		return HttpResponse("{'successful': false }", content_type="application/json", status=404)
 
-	# Create response
-
-	return HttpResponse("{'success': true}", content_type="application/json")
-
-@login_required
-def rejectUser(request, eID, uID):
-	return HttpResponse("Hi")
+	response = {}
+	response["successful"] = True
+	response["data"] = DemographicsSurvey.objects.values("user__user__username", "school", "firstLanguage", "age", "educationLevel", "sex", "country").get(user__participatein__user=participant.user)
+	return HttpResponse(json.dumps(response), content_type="application/json")
 
 def searchExperiment(request):
 	context = RequestContext(request)
