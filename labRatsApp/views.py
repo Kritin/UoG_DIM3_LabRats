@@ -62,9 +62,9 @@ def editUserDetail(request):
 			user2 = EditLabRatUserForm(request.POST,instance = b)
 			user2.save()
 			return HttpResponseRedirect('/labRatsApp/profile/'+request.user.username)	
-         
+		 
 		else:
-            		print user_form.errors,user_form2.errors
+					print user_form.errors,user_form2.errors
 
 	else:	
 		LabUser = LabRatUser.objects.filter(user = request.user)[0]
@@ -136,14 +136,18 @@ def user_login(request):
 		user = authenticate(username=username, password=password)
 
 		if user is not None:
-		    if user.is_active:
-		        login(request, user)
-		        return HttpResponseRedirect('/labRatsApp/')
-		    else:
-		        return HttpResponse("Your labRats account is disabled.")
+			if user.is_active:
+				login(request, user)
+
+				# store user type
+				request.session["userType"] = LabRatUser.objects.get(user=user).userType
+
+				return HttpResponseRedirect('/labRatsApp/')
+			else:
+				return HttpResponse("Your labRats account is disabled.")
 		else:
-		    print "Invalid login details: {0}, {1}".format(username, password)
-		    return HttpResponse("Invalid login details supplied.")
+			print "Invalid login details: {0}, {1}".format(username, password)
+			return HttpResponse("Invalid login details supplied.")
 
 
 	else:
@@ -153,13 +157,13 @@ def user_login(request):
 
 @login_required
 def restricted(request):
-    return HttpResponse("This is a page that will show when user have login (May be profile page)")
+	return HttpResponse("This is a page that will show when user have login (May be profile page)")
 
 
 @login_required
 def user_logout(request):
-    logout(request)
-    return HttpResponseRedirect('/labRatsApp/')
+	logout(request)
+	return HttpResponseRedirect('/labRatsApp/')
 
 
 def about(request):
@@ -232,25 +236,25 @@ def createExperiment(request,username):
 	create = False
 	if request.method == 'POST':
 		if username is not None:
-	            user = User.objects.filter(username = username)[0]  	
-		    LabUser = LabRatUser.objects.filter(user = user)[0]
+			user = User.objects.filter(username = username)[0]  	
+			LabUser = LabRatUser.objects.filter(user = user)[0]
 
-		    if user.is_active:
-			experiment_form = ExperimentForm(data=request.POST)
-			if experiment_form.is_valid():
-				experiment = experiment_form.save(commit=False)
-           			experiment.user = LabUser
-				experiment.save()
-				create = True
-				return HttpResponseRedirect('/labRatsApp/profile/'+username+"/")
-			else:	
-            			print experiment_form.errors
-		  		return HttpResponse("Invalid experiment details supplied.")
+			if user.is_active:
+				experiment_form = ExperimentForm(data=request.POST)
+				if experiment_form.is_valid():
+					experiment = experiment_form.save(commit=False)
+					experiment.user = LabUser
+					experiment.save()
+					create = True
+					return HttpResponseRedirect('/labRatsApp/profile/'+username+"/")
+				else:	
+					print experiment_form.errors
+					return HttpResponse("Invalid experiment details supplied.")
 
-		    else:
-		        return HttpResponse("Your labRats account is disabled.")
+			else:
+				return HttpResponse("Your labRats account is disabled.")
 		else:
-		    return HttpResponse("Invalid useename is None")
+			return HttpResponse("Invalid useename is None")
 
 		
 	else:
