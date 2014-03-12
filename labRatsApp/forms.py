@@ -1,5 +1,5 @@
 from django import forms
-from labRatsApp.models import LabRatUser, User, DemographicsSurvey, Experiment, Requirement
+from labRatsApp.models import LabRatUser, User, DemographicsSurvey, Experiment, Requirement, Timeslot
 
 class UserForm(forms.ModelForm):
 
@@ -49,6 +49,11 @@ class RequirementsForm(forms.ModelForm):
 	class Meta:
 		model = Requirement
 		fields = ('ageMin', 'ageMax', 'sex', 'firstLanguage', 'educationLevel')
+
+class TimeslotForm(forms.ModelForm):
+	class Meta:
+		model = Timeslot
+		fields = ('date', 'time_from', 'time_to')
 
 class EditUserForm(forms.ModelForm):
 	def __init__(self,*args,**kwargs):

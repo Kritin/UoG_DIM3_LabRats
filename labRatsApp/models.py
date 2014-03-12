@@ -65,7 +65,7 @@ class Timeslot(models.Model):
     time_to  = models.TimeField(null=False)
 
     def __unicode__(self):
-	   return str(self.timeslot)
+	   return str(self.timeslotID)
 
 '''
 #weak entity

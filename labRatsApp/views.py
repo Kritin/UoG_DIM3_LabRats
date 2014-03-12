@@ -6,7 +6,7 @@ from django.shortcuts import render_to_response
 
 from labRatsApp.models import LabRatUser, Experiment, ParticipateIn, DemographicsSurvey
 from labRatsApp.forms import UserForm, UserDetailsForm, LabRatDetailsForm
-from labRatsApp.forms import ExperimentForm, RequirementsForm
+from labRatsApp.forms import ExperimentForm, RequirementsForm, TimeslotForm
 from labRatsApp.forms import EditUserForm, EditLabRatUserForm
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
@@ -291,11 +291,24 @@ def experimentPage(request,expId):
 		biddingUsers = DemographicsSurvey.objects.values("user__user__username", "school", "firstLanguage", "age", "educationLevel", "sex", "country").filter(user__participatein__experimentID=expId, user__participatein__status="bidding")
 	else:
 		currentUser["isOwner"] = False
-		acceptedUser = {}
+		acceptedUsers = {}
 		biddingUsers = {}
 
+	# Create timeslot if request is POST and user is the author
+	if request.method == "POST" and currentUser["isOwner"]:
+		timeslotForm = TimeslotForm(request.POST)
+
+		if timeslotForm.is_valid():
+			timeslot = timeslotForm.save(commit=False)
+			timeslot.experimentID = experimentDetails
+			timeslot.save()
+		else:
+			print timeslotForm.errors;
+	else:
+		timeslotForm = TimeslotForm()
+
 	# Render template
-	return render_to_response('labRatsApp/experiment.html', {'experimentDetails' : experimentDetails, 'currentUser': currentUser, 'author': author, 'authorDetails': authorDetails, 'acceptedUsers': acceptedUsers, 'biddingUsers': biddingUsers}, context)
+	return render_to_response('labRatsApp/experiment.html', {'experimentDetails' : experimentDetails, 'currentUser': currentUser, 'author': author, 'authorDetails': authorDetails, 'acceptedUsers': acceptedUsers, 'biddingUsers': biddingUsers, 'timeslotForm': timeslotForm }, context)
 	
 @login_required
 def modifyParticipantStatus(request, eID, status, username):
