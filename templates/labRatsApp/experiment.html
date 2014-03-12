@@ -131,14 +131,28 @@
 								<th>Date</th>
 								<th>Start</th>
 								<th>End</th>
+								{% if currentUser.isAccepted %}
+									<th></th>
+								{% endif %}
 							</tr>
 						</thead>
 						<tbody>
-							<tr>
-								<td>Fri 04-04-2014</td>
-								<td>16:30</td>
-								<td>18:30</td>
-							</tr>
+
+							{% for timeslot in timeslots %}
+								<tr {% if timeslot.isSelected %} class="success" {% endif %}>
+										<td>{{ timeslot.date }}</td>
+										<td>{{ timeslot.time_from }}</td>
+										<td>{{ timeslot.time_to }}</td>
+										{% if currentUser.isAccepted %}
+											<td>
+												{% if not timeslot.isSelected %}
+													<a href="enrolto/{{ timeslot.timeslotID }}" class="btn btn-xs btn-success pull-right">Enrol</a>
+												{% endif %}
+											</td>
+										{% endif %}
+								</tr>
+							{% endfor %}
+
 						</tbody>
 					</table>
 

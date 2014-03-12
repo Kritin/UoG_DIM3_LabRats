@@ -4,7 +4,7 @@ from django.http import HttpResponse,HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 
-from labRatsApp.models import LabRatUser, Experiment, ParticipateIn, DemographicsSurvey
+from labRatsApp.models import LabRatUser, Experiment, ParticipateIn, DemographicsSurvey, Timeslot, EnrolIn
 from labRatsApp.forms import UserForm, UserDetailsForm, LabRatDetailsForm
 from labRatsApp.forms import ExperimentForm, RequirementsForm, TimeslotForm
 from labRatsApp.forms import EditUserForm, EditLabRatUserForm
@@ -199,7 +199,7 @@ def profile(request,username):
 	else:
 		return render_to_response('labRatsApp/RatProfile.html', {'user' : current_user,'userDetail' : userDetail }, context)		
 	'''
-	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetails, "experiments": experiments, "ratDetails":ratDetails,'activeExperiments':activeExp,'pastExperiments':pastExp}, context)
+	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetails, "experiments": experiments, "ratDetails":ratDetails,'activeExperiments':activeExp,'pastExperiments':pastExp }, context)
 
 @login_required
 def bid(request,expId):
@@ -294,6 +294,20 @@ def experimentPage(request,expId):
 		acceptedUsers = {}
 		biddingUsers = {}
 
+	# Check if current user is a participant
+	try:
+		participant = ParticipateIn.objects.get(user__user__username=request.user.username, experimentID=experimentDetails)
+		currentUser["isParticipant"] = True
+	except:
+		participant = None
+		currentUser["isParticipant"] = False
+
+	# Check if current user has been accepted
+	if participant and participant.status == "accepted":
+		currentUser["isAccepted"] = True
+	else:
+		currentUser["isAccepted"] = False
+
 	# Create timeslot if request is POST and user is the author
 	if request.method == "POST" and currentUser["isOwner"]:
 		timeslotForm = TimeslotForm(request.POST)
@@ -307,9 +321,37 @@ def experimentPage(request,expId):
 	else:
 		timeslotForm = TimeslotForm()
 
+	# Retrieve timeslots for experiment
+	timeslots = Timeslot.objects.filter(experimentID=experimentDetails)
+	for t in timeslots:
+		if currentUser["isAccepted"] and EnrolIn.objects.filter(user__user__username=request.user.username, timeslotID=t).exists():
+			t.isSelected = True
+		else:
+			t.isSelected = False
+
 	# Render template
-	return render_to_response('labRatsApp/experiment.html', {'experimentDetails' : experimentDetails, 'currentUser': currentUser, 'author': author, 'authorDetails': authorDetails, 'acceptedUsers': acceptedUsers, 'biddingUsers': biddingUsers, 'timeslotForm': timeslotForm }, context)
+	return render_to_response('labRatsApp/experiment.html', {'experimentDetails' : experimentDetails, 'currentUser': currentUser, 'author': author, 'authorDetails': authorDetails, 'acceptedUsers': acceptedUsers, 'biddingUsers': biddingUsers, 'timeslotForm': timeslotForm, 'timeslots': timeslots }, context)
 	
+@login_required
+def enrol(request, eID, tID):
+	# Check that user is a participant and that user has been accepted
+	try:
+		ParticipateIn.objects.get(user__user__username=request.user.username, experimentID=eID, status="accepted")
+	except:
+		return HttpResponse("You are not authorized to do this.", status=403)
+
+	# Remove previous timeslot selection
+	EnrolIn.objects.filter(user__user__username=request.user.username, timeslotID__experimentID=eID).delete()
+
+	# Select new timeslot
+	enrol = EnrolIn()
+	enrol.user = LabRatUser.objects.get(user=request.user)
+	enrol.timeslotID = Timeslot.objects.get(timeslotID=tID)
+	enrol.save()
+
+	# Redirect to experiment page
+	return HttpResponseRedirect("/labRatsApp/experiment/" + eID + "/")
+
 @login_required
 def modifyParticipantStatus(request, eID, status, username):
 	# Check if status is valid

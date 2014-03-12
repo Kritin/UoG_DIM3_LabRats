@@ -3,7 +3,7 @@ $(function() {
 	$(".paccept").click(function() {
 		var button = $(this);
 
-		$.get("accept/"+button.attr("data-user")+"/", function(msg) {
+		$.get("setstatus/accept/user/"+button.attr("data-user")+"/", function(msg) {
 			if(msg.successful) {
 				$(".participants-table tbody").prepend(
 					"<tr>" +
@@ -27,7 +27,7 @@ $(function() {
 	$(".preject").click(function () {
 		var button = $(this);
 
-		$.get("reject/"+button.attr("data-user")+"/", function(msg) {
+		$.get("setstatus/reject/user/"+button.attr("data-user")+"/", function(msg) {
 			if(msg.successful)
 				button.parents(".bid-row").remove();
 			else
