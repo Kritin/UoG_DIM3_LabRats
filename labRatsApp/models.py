@@ -52,7 +52,7 @@ class Requirement(models.Model):
     sex = models.CharField(max_length=1, null=True, blank=True)
     firstLanguage = models.CharField(max_length=128, null=True, blank=True)
     educationLevel = models.CharField(max_length=128, null=True, blank=True)
-    location = models.CharField(max_length=128)
+    location = models.CharField(max_length=128, null=True, blank=True)
 
     def __unicode__(self):
         return str(self.experiment.experimentID)

@@ -1,5 +1,19 @@
 {% extends 'labRatsApp/base.html' %}
 
+{% block scripts %}
+
+	<script>
+		$(function() {
+			$("#sortBy").change(function() {
+				var link = $(this).children(":selected").attr("data-href");
+				if(link !== undefined)
+					window.location.href=link;
+			});
+		});
+	</script>
+
+{% endblock %}
+
 {% block mainbody %}
 
 	<div class="row">
@@ -7,13 +21,11 @@
 		<div class="col-md-3">
 			<!-- Sort By -->
 			<div class="form-group">
-				<select class="form-control">
-					<option selected>Sort By</option>
-					<option>1</option>
-					<option>2</option>
-					<option>3</option>
-					<option>4</option>
-					<option>5</option>
+				<select id="sortBy" class="form-control">
+					<option>Sort By</option>
+					<option {% if selected = "dateEnd" %} selected {% endif %} data-href="?sortBy=dateEnd">Ending Soonest</option>
+					<option {% if selected = "reward" %} selected {% endif %} data-href="?sortBy=reward">Reward</option>
+					<option {% if selected = "location" %} selected {% endif %} data-href="?sortBy=location">Location</option>
 				</select>
 			</div>
 

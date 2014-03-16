@@ -18,8 +18,11 @@ def index(request):
 	context = RequestContext(request)
 
 	experiments = Experiment.objects.filter(status="open")
+	sortBy = None
+	selected = None
 
 	if(request.GET):
+		# get filters
 		filters = RequirementsForm(data=request.GET)
 
 		if filters.is_valid():
@@ -43,16 +46,30 @@ def index(request):
 				experiments = experiments.filter(Q(requirement__location=filters.cleaned_data.get("location")) | Q(requirement__location="") | Q(requirement__location__isnull=True))
 		else:
 			print filters.errors
+
+		# get sort by
+		sortBy = request.GET.get("sortBy")
+		if sortBy is not None and sortBy != "" and sortBy == "reward":
+			experiments = experiments.order_by("rewardAmount")
+			selected = "reward"
+		elif sortBy is not None and sortBy != "" and sortBy == "location":
+			experiments = experiments.order_by("location")
+			selected = "location"
+		elif sortBy is not None and sortBy != "" and sortBy == "dateEnd":
+			experiments = experiments.order_by("date_end")
+			selected = "dateEnd"
+
 	else:
 		filters = RequirementsForm()
 
-	experiments = experiments.order_by("date_end")
+	if sortBy is None:
+		experiments = experiments.order_by("date_end")
 
 	for e in experiments:
 		e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
 		e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
 
-	return render_to_response('labRatsApp/index.html', {'experiments' : experiments, 'filters': filters}, context)
+	return render_to_response('labRatsApp/index.html', {'experiments' : experiments, 'filters': filters, 'selected': selected}, context)
 
 @login_required
 def editUserDetail(request):
