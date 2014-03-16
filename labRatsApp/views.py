@@ -16,7 +16,7 @@ from django.db.models import Q
 def index(request):
 	context = RequestContext(request)
 
-	experiments = Experiment.objects.filter(status="open")#.order_by("date_end")
+	experiments = Experiment.objects.filter(status="open")
 
 	if(request.GET):
 		filters = RequirementsForm(data=request.GET)
@@ -37,10 +37,15 @@ def index(request):
 
 			if filters.cleaned_data.get("educationLevel") is not None and filters.cleaned_data.get("educationLevel") != "":
 				experiments = experiments.filter(Q(requirement__educationLevel=filters.cleaned_data.get("educationLevel")) | Q(requirement__educationLevel="") | Q(requirement__educationLevel__isnull=True))
+
+			if filters.cleaned_data.get("location") is not None and filters.cleaned_data.get("location") != "":
+				experiments = experiments.filter(Q(requirement__location=filters.cleaned_data.get("location")) | Q(requirement__location="") | Q(requirement__location__isnull=True))
 		else:
 			print filters.errors
 	else:
 		filters = RequirementsForm()
+
+	experiments = experiments.order_by("date_end")
 
 	for e in experiments:
 		e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
@@ -140,7 +145,10 @@ def user_login(request):
 				login(request, user)
 
 				# store user type
-				request.session["userType"] = LabRatUser.objects.get(user=user).userType
+				try:
+					request.session["userType"] = LabRatUser.objects.get(user=user).userType
+				except:
+					request.session["userType"] = ""
 
 				return HttpResponseRedirect('/labRatsApp/')
 			else:
@@ -153,18 +161,10 @@ def user_login(request):
 	else:
 		return render_to_response('labRatsApp/login.html', {}, context)
 
-
-
-@login_required
-def restricted(request):
-	return HttpResponse("This is a page that will show when user have login (May be profile page)")
-
-
 @login_required
 def user_logout(request):
 	logout(request)
 	return HttpResponseRedirect('/labRatsApp/')
-
 
 def about(request):
 	context = RequestContext(request)
@@ -195,14 +195,7 @@ def profile(request,username):
 		ratDetails = DemographicsSurvey.objects.filter(user = userDetails)[0]
 	activeExp = Experiment.objects.filter(user = userDetails,status="open")
 	pastExp = Experiment.objects.filter(user = userDetails,status="open")
-	
 
-	'''
-	if userDetail.userType == "experimenter":
-		return render_to_response('labRatsApp/ExperimenterProfile.html', {'user' : current_user,'userDetail' : userDetail,'experiment' : experiment }, context)
-	else:
-		return render_to_response('labRatsApp/RatProfile.html', {'user' : current_user,'userDetail' : userDetail }, context)		
-	'''
 	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetails, "experiments": experiments, "ratDetails":ratDetails,'activeExperiments':activeExp,'pastExperiments':pastExp }, context)
 
 @login_required

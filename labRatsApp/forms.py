@@ -22,7 +22,7 @@ class LabRatDetailsForm(forms.ModelForm):
 
 	class Meta:
 		model = DemographicsSurvey
-		fields = ('school', 'age', 'sex', 'firstLanguage', 'country', 'educationLevel')
+		fields = ('school', 'age', 'sex', 'firstLanguage', 'country', 'educationLevel', 'location')
 
 '''
 class UserForm2(forms.ModelForm):
@@ -38,17 +38,17 @@ class ExperimentForm(forms.ModelForm):
 	max_participants = forms.ChoiceField(choices=[(x, x) for x in range(1, 100)])
 	rewardType = forms.ChoiceField(widget=forms.Select(), choices=[('volunteer','Volunteer'), ('paid','Paid'),('credit', 'Credit')])
 
-        date_start  = forms.DateField(widget=forms.widgets.DateInput(format="%m/%d/%Y")) 
+	date_start  = forms.DateField(widget=forms.widgets.DateInput(format="%m/%d/%Y")) 
 	date_end = forms.DateField(widget=forms.widgets.DateInput(format="%m/%d/%Y")) 
 	rewardAmount = forms.IntegerField(required=False, widget=forms.HiddenInput(),initial=123)
 	class Meta:
 		model = Experiment
-		fields = ( 'title','description','requirements','max_participants','date_start','date_end','tags','rewardType','rewardAmount')
+		fields = ( 'title','description', 'max_participants','date_start','date_end','tags','rewardType','rewardAmount', 'location')
 
 class RequirementsForm(forms.ModelForm):
 	class Meta:
 		model = Requirement
-		fields = ('ageMin', 'ageMax', 'sex', 'firstLanguage', 'educationLevel')
+		fields = ('ageMin', 'ageMax', 'sex', 'firstLanguage', 'educationLevel', 'location')
 
 class TimeslotForm(forms.ModelForm):
 	class Meta:

@@ -22,6 +22,7 @@ class DemographicsSurvey(models.Model):
     firstLanguage = models.CharField(max_length=128)
     country = models.CharField(max_length=128)
     educationLevel = models.CharField(max_length=128)
+    location = models.CharField(max_length=128)
 
     def __unicode__(self):
         return str(self.user.user.username)
@@ -31,7 +32,6 @@ class Experiment(models.Model):
     user = models.ForeignKey(LabRatUser) 
     title = models.CharField(max_length=128) 
     description  = models.TextField()
-    requirements = models.CharField(max_length=128)
     max_participants = models.IntegerField()
     num_of_participants = models.IntegerField(default= "0")
     date_start = models.DateField(null=False)
@@ -40,6 +40,7 @@ class Experiment(models.Model):
     rewardType = models.CharField(max_length=128)
     rewardAmount = models.CharField(max_length=128)
     status = models.CharField(max_length=128, default= "open")
+    location = models.CharField(max_length=128) # location where experiment is taking place
 
     def __unicode__(self):
         return str(self.experimentID)
@@ -51,7 +52,7 @@ class Requirement(models.Model):
     sex = models.CharField(max_length=1, null=True, blank=True)
     firstLanguage = models.CharField(max_length=128, null=True, blank=True)
     educationLevel = models.CharField(max_length=128, null=True, blank=True)
-    #location = models.CharField(max_length=128) This should be included as well
+    location = models.CharField(max_length=128)
 
     def __unicode__(self):
         return str(self.experiment.experimentID)
