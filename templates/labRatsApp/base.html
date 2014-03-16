@@ -52,11 +52,25 @@
 
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-								<span class="glyphicon glyphicon-envelope"></span> <span class="badge">2</span> <b class="caret"></b>
+								<span class="glyphicon glyphicon-envelope"></span>
+								<span class="badge badge-success">
+									{% if messages %}
+										{{ request.session.msgCount }}
+									{% else %}
+										0
+									{% endif %}
+								</span>
+								<b class="caret"></b>
 							</a>
 							<ul class="dropdown-menu">
-								<li><a href="#">Link to notification</a></li>
-								<li><a href="#">Link to notification</a></li>
+								{% if messages %}
+									{% for message in messages %}
+										<li><a href="{{ message.extra_tags }}">{{ message }}</a></li>
+										<li class="divider"></li>
+									{% endfor %}
+								{% else %}
+									<li><a href="#">No new messages.</a></li>
+								{% endif %}
 							</ul>
 						</li>
 					</ul>

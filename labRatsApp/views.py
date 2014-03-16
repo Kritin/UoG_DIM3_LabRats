@@ -3,6 +3,7 @@ import datetime, json
 from django.http import HttpResponse,HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
+from django.contrib import messages
 
 from labRatsApp.models import LabRatUser, Experiment, ParticipateIn, DemographicsSurvey, Timeslot, EnrolIn
 from labRatsApp.forms import UserForm, UserDetailsForm, LabRatDetailsForm
@@ -150,6 +151,19 @@ def user_login(request):
 				except:
 					request.session["userType"] = ""
 
+				# get notifications for current user (using the Django message framework)
+				# retrieves all entries from ParticipateIn which have been modified in the past week
+				notifications = ParticipateIn.objects.filter(user__user=user, date__gte=(datetime.date.today()-datetime.timedelta(days=7)))
+				notifications = notifications.filter(Q(status="accepted") | Q(status="rejected"))
+				for notification in notifications:
+					if notification.status == "accepted":
+						msgStr = "Congratulations! You have been selected to participate in \"" + notification.experimentID.title + "\". "
+					else:
+						msgStr = "Sorry, you have been rejected from \"" + notification.experimentID.title + "\". "
+					messages.info(request, msgStr, extra_tags="/labRatsApp/experiment/"+str(notification.experimentID.experimentID)+"/")
+				request.session["msgCount"] = notifications.count()
+
+				# redirect user to home page
 				return HttpResponseRedirect('/labRatsApp/')
 			else:
 				return HttpResponse("Your labRats account is disabled.")
