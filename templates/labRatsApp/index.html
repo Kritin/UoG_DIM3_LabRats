@@ -1,7 +1,9 @@
 {% extends 'labRatsApp/base.html' %}
 
-{% block scripts %}
+{% load static %}
 
+{% block scripts %}
+ 	<script src="{% static 'js/bid.js' %}"></script>
 	<script>
 		$(function() {
 			$("#sortBy").change(function() {
@@ -11,7 +13,6 @@
 			});
 		});
 	</script>
-
 {% endblock %}
 
 {% block mainbody %}
@@ -57,7 +58,9 @@
 						<div class="row">
 							<h4 class="col-md-11 col-xs-8"><a href="/labRatsApp/experiment/{{e}}">{{e.title}}</a></h4>
 							<div class="col-md-1 col-xs-4">
-								<a class="btn btn-success pull-right">Bid</a>
+								{% if request.session.userType = "rat" %}
+									<a class="btn btn-success pull-right bidbtn" data-exp="{{e}}">Bid</a>
+								{% endif %}
 							</div>
 						</div>
 					</div>

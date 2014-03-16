@@ -5,6 +5,7 @@
 {% block title %}{{experiment.title}}{% endblock %}
 
 {% block scripts %}
+	<script src="{% static 'js/bid.js' %}"></script>
 	<script src="{% static 'js/experiment.js' %}"></script>
 {% endblock %}
 
@@ -35,8 +36,8 @@
 							<div class="row">
 								<h4 class="col-md-11 col-xs-8">{{experimentDetails.title}}</h4>
 								<div class="col-md-1 col-xs-4">
-									{% if user.canBid %}
-										<a class="btn btn-success pull-right">Bid</a>
+									{% if request.session.userType = "rat" %}
+										<a class="btn btn-success pull-right bidbtn" data-exp="{{experimentDetails}}">Bid</a>
 									{% endif %}
 								</div>
 							</div>

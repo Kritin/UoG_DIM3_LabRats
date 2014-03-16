@@ -235,22 +235,20 @@ def bid(request,expId):
 	try:
 		experimentDetails = Experiment.objects.get(experimentID=expId)
 	except:
-		return HttpResponse("Experiment " + expId + " does not exist.", status=404)
-	experimentDetails.num_of_participants = int(experimentDetails.num_of_participants) + 1
-	if int(experimentDetails.num_of_participants) == int(experimentDetails.max_participants) -1 :
-		experimentDetails.status = "Full"
+		return HttpResponse(json.dumps({"successful": False, "msg": "Experiment " + expId + " does not exist."}), content_type="application/json")
+
 	try:
 		mainUser = LabRatUser.objects.get(user = request.user)
 		ratUser = DemographicsSurvey.objects.get(user = mainUser)
 	except:
-		return HttpResponse("User " + request.user.username + " does not match." , status=404)
+		return HttpResponse(json.dumps({"successful": False, "msg": "User " + request.user.username + " is not a lab rat."}), content_type="application/json")
 	try:
-		b = ParticipateIn(user = mainUser,experimentID = experimentDetails ,status = "bidding",date = datetime.date.today())
+		b = ParticipateIn(user=mainUser, experimentID=experimentDetails, status="bidding", date=datetime.date.today())
 		b.save()
 	except:
-		return HttpResponseRedirect('/labRatsApp/')
+		return HttpResponse(json.dumps({"successful": False, "msg": "Could not store bid."}), content_type="application/json")
 	
-	return HttpResponseRedirect('/labRatsApp/')
+	return HttpResponse(json.dumps({"successful": True, "msg": "Bid stored successfully."}), content_type="application/json")
 
 
 @login_required
@@ -401,6 +399,10 @@ def modifyParticipantStatus(request, eID, status, username):
 		participant = ParticipateIn.objects.get(experimentID=eID, user__user__username=username)
 		if status == "accept":
 			participant.status = "accepted"
+			# increase number of participants
+			experiment = Experiment.objects.get(experimentID=eID)
+			experiment.num_of_participants += 1
+			experiment.save()
 		else:
 			participant.status = "rejected"
 		participant.date = datetime.date.today()
