@@ -4,15 +4,16 @@ from django.http import HttpResponse,HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.contrib import messages
+from django.contrib.auth import authenticate, login,logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.db.models import Q
 
 from labRatsApp.models import LabRatUser, Experiment, ParticipateIn, DemographicsSurvey, Timeslot, EnrolIn
 from labRatsApp.forms import UserForm, UserDetailsForm, LabRatDetailsForm
 from labRatsApp.forms import ExperimentForm, RequirementsForm, TimeslotForm
 from labRatsApp.forms import EditUserForm, EditLabRatUserForm
-from django.contrib.auth import authenticate, login,logout
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from django.db.models import Q
+from labRatsApp.bing_search import run_query
 
 def index(request):
 	context = RequestContext(request)
@@ -68,6 +69,7 @@ def index(request):
 	for e in experiments:
 		e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
 		e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
+		e.tags = e.tags.split(", ")
 
 	return render_to_response('labRatsApp/index.html', {'experiments' : experiments, 'filters': filters, 'selected': selected}, context)
 
@@ -220,6 +222,7 @@ def profile(request,username):
 	for e in experiments:
 		e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
 		e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
+		e.tags = e.tags.split(", ")
 	
 	ratDetails = None
 	if(userDetails.userType == "rat"):
@@ -246,7 +249,7 @@ def bid(request,expId):
 		b = ParticipateIn(user=mainUser, experimentID=experimentDetails, status="bidding", date=datetime.date.today())
 		b.save()
 	except:
-		return HttpResponse(json.dumps({"successful": False, "msg": "Could not store bid."}), content_type="application/json")
+		return HttpResponse(json.dumps({"successful": False, "msg": "You've already bid on this experiment"}), content_type="application/json")
 	
 	return HttpResponse(json.dumps({"successful": True, "msg": "Bid stored successfully."}), content_type="application/json")
 
@@ -297,6 +300,7 @@ def experimentPage(request,expId):
 	try:
 		experimentDetails = Experiment.objects.get(experimentID=expId)
 		experimentDetails.percent_full = ( experimentDetails.num_of_participants * 100 ) / experimentDetails.max_participants
+		experimentDetails.tags = experimentDetails.tags.split(", ")
 	except:
 		return HttpResponse("Experiment " + expId + " does not exist.", status=404)
 
@@ -416,13 +420,22 @@ def modifyParticipantStatus(request, eID, status, username):
 	response["data"] = DemographicsSurvey.objects.values("user__user__username", "school", "firstLanguage", "age", "educationLevel", "sex", "country").get(user__participatein__user=participant.user, user__participatein__experimentID=eID)
 	return HttpResponse(json.dumps(response), content_type="application/json")
 
-def searchExperiment(request):
+def search(request):
 	context = RequestContext(request)
-	if request.method == 'POST':
-		expName = request.POST["searchValue"]
+	result_list = []
 
-		try:
-			experiments = Experiment.objects.get(title = expName)
-			return HttpResponseRedirect('/labRatsApp/experiment/'+str(experiments.experimentID)+'/')
-		except:
-			return HttpResponseRedirect('/labRatsApp/experiment/0/')
+	if request.method == 'POST':
+		query = request.POST['query'].strip()
+
+		if query:
+			result_list = run_query(query)
+
+	return render_to_response('labRatsApp/search.html', {'result_list': result_list}, context)
+
+def tag(request, tag):
+	context = RequestContext(request)
+	# get all experiments that share the same tag
+	experiments = Experiment.objects.filter(Q(tags__contains= ", "+tag+", ") | Q(tags__startswith=tag+", ") | Q(tags__endswith=", "+tag) | Q(tags=tag))
+	for e in experiments:
+		e.tags = e.tags.split(", ")
+	return render_to_response('labRatsApp/tag.html', {'experiments': experiments}, context)

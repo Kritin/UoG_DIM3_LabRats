@@ -13,6 +13,7 @@ urlpatterns = patterns('',
 	url(r'^experiment/(?P<eID>\w+)/enrolto/(?P<tID>\w+)/$', views.enrol, name='enrol'),
 	url(r'^experiment/(?P<eID>\w+)/setstatus/(?P<status>\w+)/user/(?P<username>\w+)/$', views.modifyParticipantStatus, name='modifyParticipantStatus'),
 	url(r'^editProfile/$', views.editUserDetail, name='editUserDetail'),
-	url(r'^searchExperiment/$', views.searchExperiment, name='searchExperiment'),
+	url(r'^search/$', views.search, name='search'),
+	url(r'^tag/(?P<tag>\w+)/$', views.tag, name='tag'),
 	url(r'^bid/(?P<expId>\w+)/$', views.bid, name='bid')  
 )

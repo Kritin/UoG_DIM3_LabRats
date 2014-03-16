@@ -59,8 +59,13 @@
 									
 									<div class="clearfix"></div>
 
-									<p class="pull-right"><strong>Tags:</strong> {{experimentDetails.tags}}</p>
-								</div>											
+									<p class="pull-right">
+										<strong>Tags:</strong>
+										{% for tag in experimentDetails.tags %}
+											<a href="/labRatsApp/tag/{{tag}}/">{{tag}}</a>&nbsp;
+										{% endfor %}
+									</p>
+								</div>
 							</div>
 						</div>
 					</div>
