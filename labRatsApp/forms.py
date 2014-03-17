@@ -27,10 +27,10 @@ class UserDetailsForm(forms.ModelForm):
 class ExperimentForm(forms.ModelForm):
 	
 	title = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
-	description = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
+	description = forms.CharField(widget=forms.Textarea(attrs={'class':'form-control'}))
 	max_participants = forms.IntegerField(widget=forms.TextInput(attrs={'class':'form-control'}))
-	rewardType = forms.ChoiceField(widget=forms.Select(), choices=[('volunteer','Volunteer'), ('paid','Paid'),('credit', 'Credit')])
-
+	rewardType = forms.ChoiceField(widget=forms.Select(attrs={'class':'form-control'}), choices=[('volunteer','Volunteer'), ('paid','Paid'),('credit', 'Credit')])
+	tags = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
 	date_start  = forms.DateField(widget=forms.widgets.DateInput(format="%m/%d/%Y")) 
 	date_end = forms.DateField(widget=forms.widgets.DateInput(format="%m/%d/%Y")) 
 	rewardAmount = forms.IntegerField(required=False,widget=forms.TextInput,initial=0)
@@ -49,7 +49,7 @@ class RequirementsForm(forms.ModelForm):
 
 	class Meta:
 		model = Requirement
-		
+		fields = ( 'ageMin','ageMax', 'sex','firstLanguage','educationLevel','location')
 		
 class TimeslotForm(forms.ModelForm):
 	class Meta:
