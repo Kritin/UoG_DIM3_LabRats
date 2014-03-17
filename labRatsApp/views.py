@@ -347,9 +347,7 @@ def createExperiment(request):
 	else:
 		user = User.objects.filter(username = request.user.username)[0]
 		LabUser = LabRatUser.objects.filter(user = request.user)[0]
-		if request.user.username != user.username:
-			return HttpResponseForbidden("Hacker!! , This is not your username.")
-		elif LabUser.userType == "rat":
+		if LabUser.userType == "rat":
 			return HttpResponseForbidden("You are not an experimenter")
 		else:
 			experiment_form = ExperimentForm()
