@@ -39,7 +39,13 @@
 				<div class="panel-body">
 					<form method="get" action="">
 
-						{{ filters.as_p }}
+						<!--{{ filters.as_p }} -->
+						{% for field in filters %}
+							<div class="form-group">
+								<label for="id_{{ field.name }}">{{ field.label }}</label>
+								{{ field }}
+							</div>
+						{% endfor %}
 
 						<input type="submit" value="Update" class="btn btn-success" />
 					</form>
