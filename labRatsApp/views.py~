@@ -226,12 +226,24 @@ def profile(request,username):
 		e.tags = e.tags.split(", ")
 	
 	ratDetails = None
-	if(userDetails.userType == "rat"):
-		ratDetails = DemographicsSurvey.objects.filter(user = userDetails)[0]
-	activeExp = Experiment.objects.filter(user = userDetails,status="open")
-	pastExp = Experiment.objects.filter(user = userDetails,status="open")
+	activeExp = None
+	pastExp = None
+	
+	currExp = None
+	history = None
+	currBids = None
+	# get lab rat details and experiments
+	if userDetails.userType == "rat" :
+		ratDetails = DemographicsSurvey.objects.get(user = userDetails)
+		history = Experiment.objects.filter(participatein__user=userDetails, date_end__lt=datetime.date.today())
+		currExp = Experiment.objects.filter(participatein__user=userDetails, date_end__gte=datetime.date.today(), participatein__status='accepted')
+		currBids = Experiment.objects.filter(participatein__user=userDetails, date_end__gte=datetime.date.today(), participatein__status='bidding')
+	# get experimenter experiments
+	else:
+		activeExp = Experiment.objects.filter(user = userDetails, date_end__gte=datetime.date.today())
+		pastExp = Experiment.objects.filter(user = userDetails,date_end__lt=datetime.date.today())
 
-	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetails, "experiments": experiments, "ratDetails":ratDetails,'activeExperiments':activeExp,'pastExperiments':pastExp }, context)
+	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetails, "history": history, "currentBids": currBids, "currentExperiments": currExp "ratDetails":ratDetails,'activeExperiments':activeExp,'pastExperiments':pastExp }, context)
 
 @login_required
 def bid(request,expId):
@@ -414,15 +426,17 @@ def modifyParticipantStatus(request, eID, status, username):
 			participant.status = "rejected"
 		participant.date = datetime.date.today()
 		participant.save()
-		send_mail('Participation status of Experiment ' + experiment.title, 'You have been ' + participant.status , 'Brain@LabRats.com',
-		[participant.user.email], fail_silently=True)
-	# User is not a participant in the experiment
+		#print participant.user.email
+		
 	except:
 		return HttpResponse("{'successful': false }", content_type="application/json", status=404)
 
 	response = {}
 	response["successful"] = True
 	response["data"] = DemographicsSurvey.objects.values("user__user__username", "school", "firstLanguage", "age", "educationLevel", "sex", "country").get(user__participatein__user=participant.user, user__participatein__experimentID=eID)
+
+	send_mail('Participation status of Experiment ' + experiment.title , 'You have been ' + participant.status, 'labratsapp@gmail.com', [participant.user.user.email], fail_silently=False)
+	# User is not a participant in the experiment
 	return HttpResponse(json.dumps(response), content_type="application/json")
 
 def search(request):
