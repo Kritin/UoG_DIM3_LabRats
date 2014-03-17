@@ -19,7 +19,7 @@
 				<div class="panel-body">
 					<h3>{{user.username}}</h3>
 				</div>
-				<table class="table">
+				<table class="table table-responsive">
 					<tbody>
 						<tr>
 							<td>Name</td>
@@ -34,26 +34,46 @@
 							<td>{{user.email}}</td>
 						</tr>
 						<tr>
+							<td>Website</td>
+							<td><a href="#">{{userDetails.webpage}}</a></td>
+							
+						</tr>
+						<tr>
 							<td>Role</td>
 							<td>{{userDetails.userType}}</td>
 						</tr>
 						<!--% if user.isRat % -->
 						{% if userDetails.userType = "rat" %}
-						
 							<tr>
 								<td>Age</td>
 								<td>{{ratDetails.age}}</td>
 							</tr>
 							<tr>
+								<td>Sex</td>
+								<td>{{ratDetails.sex}}</td>
+							</tr>
+							<tr>
 								<td>School</td>
 								<td>{{ratDetails.school}}</td>
-							</tr>						
+							</tr>
+							<tr>
+								<td>Education Level</td>
+								<td>{{ratDetails.educationLevel}}</td>
+							</tr>
+							<tr>
+								<td>First Language</td>
+								<td>{{ratDetails.firstLanguage}}</td>
+							</tr>
+							<tr>
+								<td>Country</td>
+								<td>{{ratDetails.country}}</td>
+							</tr>
+							<tr>
+								<td>Location</td>
+								<td>{{ratDetails.location}}</td>
+							</tr>
+
 						{% endif %}
-						<tr>
-							<td>Website</td>
-							<td><a href="#">{{userDetails.webpage}}</a></td>
-							
-						</tr>
 					</tbody>
 				</table>
 			</div>

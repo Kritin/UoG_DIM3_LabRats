@@ -239,10 +239,35 @@ def profile(request,username):
 		history = Experiment.objects.filter(participatein__user=userDetails, date_end__lt=datetime.date.today())
 		currExp = Experiment.objects.filter(participatein__user=userDetails, date_end__gte=datetime.date.today(), participatein__status='accepted')
 		currBids = Experiment.objects.filter(participatein__user=userDetails, date_end__gte=datetime.date.today(), participatein__status='bidding')
+
+		for e in history:
+			e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
+			e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
+			e.tags = e.tags.split(", ")
+
+		for e in currExp:
+			e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
+			e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
+			e.tags = e.tags.split(", ")
+
+		for e in currBids:
+			e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
+			e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
+			e.tags = e.tags.split(", ")
 	# get experimenter experiments
 	else:
 		activeExp = Experiment.objects.filter(user = userDetails, date_end__gte=datetime.date.today())
 		pastExp = Experiment.objects.filter(user = userDetails,date_end__lt=datetime.date.today())
+
+		for e in activeExp:
+			e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
+			e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
+			e.tags = e.tags.split(", ")
+
+		for e in pastExp:
+			e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
+			e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
+			e.tags = e.tags.split(", ")
 
 	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetails, "history": history, "currentBids": currBids, "currentExperiments": currExp, "ratDetails":ratDetails,'activeExperiments':activeExp,'pastExperiments':pastExp }, context)
 
@@ -463,4 +488,6 @@ def tag(request, tag):
 	experiments = Experiment.objects.filter(Q(tags__contains= ", "+tag+", ") | Q(tags__startswith=tag+", ") | Q(tags__endswith=", "+tag) | Q(tags=tag))
 	for e in experiments:
 		e.tags = e.tags.split(", ")
+		e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
+		e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
 	return render_to_response('labRatsApp/tag.html', {'experiments': experiments}, context)

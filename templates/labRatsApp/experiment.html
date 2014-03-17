@@ -46,14 +46,18 @@
 							<p>{{experimentDetails.description}}</p>
 
 							<div class="row">
-								<!-- Experiment requirements -->
+								<!-- Experiment details -->
 								<div class="col-md-6">
-									Participants: {{experimentDetails.num_of_participants}}/{{experimentDetails.max_participants}}
-									<div class="progress">
-										<div class="progress-bar" role="progressbar" aria-valuenow="{{experimentDetails.num_of_participants}}" aria-valuemin="0" aria-valuemax="{{experimentDetails.max_participants}}" style="width: {{experimentDetails.percent_full}}%"></div>
-									</div>
+									<p><strong>Ending:</strong> {{experimentDetails.date_end}}</p>
+									<p><strong>Location:</strong> {{experimentDetails.location}}</p>
+									<p>
+										<strong>Participants:</strong> {{experimentDetails.num_of_participants}}/{{experimentDetails.max_participants}}
+										<div class="progress">
+											<div class="progress-bar" role="progressbar" aria-valuenow="{{experimentDetails.num_of_participants}}" aria-valuemin="0" aria-valuemax="{{experimentDetails.max_participants}}" style="width: {{experimentDetails.percent_full}}%"></div>
+										</div>
+									</p>
 								</div>
-								
+									
 								<div class="col-md-6">
 									<h3 class="pull-right well well-sm">Reward: <span class="glyphicon glyphicon-gbp"></span> {{experimentDetails.rewardAmount}}</h3>
 									

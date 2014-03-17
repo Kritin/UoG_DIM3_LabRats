@@ -75,12 +75,16 @@
 						<p>{{e.description_short}}</p>
 						
 						<div class="row">
-							<!-- Experiment requirements -->
+							<!-- Experiment details -->
 							<div class="col-md-6">
-								Participants: {{e.num_of_participants}}/{{e.max_participants}}
-								<div class="progress">
-									<div class="progress-bar" role="progressbar" aria-valuenow="{{e.num_of_participants}}" aria-valuemin="0" aria-valuemax="{{e.max_participants}}" style="width: {{e.percent_full}}%"></div>
-								</div>
+								<p><strong>Ending:</strong> {{e.date_end}}</p>
+								<p><strong>Location:</strong> {{e.location}}</p>
+								<p>
+									<strong>Participants:</strong> {{e.num_of_participants}}/{{e.max_participants}}
+									<div class="progress">
+										<div class="progress-bar" role="progressbar" aria-valuenow="{{e.num_of_participants}}" aria-valuemin="0" aria-valuemax="{{e.max_participants}}" style="width: {{e.percent_full}}%"></div>
+									</div>
+								</p>
 							</div>
 							
 							<div class="col-md-6">
