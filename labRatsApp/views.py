@@ -78,15 +78,20 @@ def index(request):
 def editUserDetail(request):
 	context = RequestContext(request)
 	if request.method == 'POST':
+		
+		b = LabRatUser.objects.get(user = request.user)
 		user_form = EditUserForm(data=request.POST)
 		user_form2 = EditLabRatUserForm(data=request.POST)
-		if user_form.is_valid() and user_form2.is_valid():
+		user_demographics_form = EditDemographicsForm(data=request.POST)
+		if user_form.is_valid() and ((user_form2.is_valid() and user_demographics_form.is_valid()) or not b.userType == "rat"):
 			a = User.objects.get(username = request.user.username)
 			user = EditUserForm(request.POST,instance = a)
 			user.save()
-			b = LabRatUser.objects.get(user = request.user)
-			user2 = EditLabRatUserForm(request.POST,instance = b)
-			user2.save()
+			if b.userType == "rat":
+				user2 = EditLabRatUserForm(request.POST,instance = b)
+				user2.save()
+				user3 = EditDemographicsForm(request.POST,instance=b)
+				user3.save()
 			return HttpResponseRedirect('/labRatsApp/profile/'+request.user.username)	
 		 
 		else:
@@ -98,15 +103,16 @@ def editUserDetail(request):
 		user_form2 = None
 		if LabUser.userType == "rat":
 			Demographics = DemographicsSurvey.objects.filter(user = request.user)[0]
-			user_form2 =  EditLabRatUserForm(initial = {'title':LabUser.title,'phone':LabUser.phone,'webpage':LabUser.webpage,'school':Demographics.school,'age':Demographics.age})	
-		user_form = EditUserForm(initial = {'first_name':request.user.first_name,'last_name':request.user.last_name,'email':request.user.email})
+			user_form2 =  EditLabRatUserForm(initial = {'title':LabUser.title,'phone':LabUser.phone,'webpage':LabUser.webpage})	
+			user_form = EditUserForm(initial = {'first_name':request.user.first_name,'last_name':request.user.last_name,'email':request.user.email})
+			user_demographics_form = EditDemographicsForm(initial = {'school':Demographics.school, 'age':Demographics.age, 'sex':Demographics.sex, 'firstLanguage':Demographics.firstLanguage, 'country':Demographics.country, 'educationLevel':Demographics.educationLevel, 'location':Demographics.location})
 
 
 		
 
 		
 
-	return render_to_response('labRatsApp/settings.html', {'userForm' : user_form,'userDetailsForm' : user_form2, 'type':'Edit','url':'/labRatsApp/editProfile/'}, context)
+	return render_to_response('labRatsApp/settings.html', {'userForm' : user_form,'userDetailsForm' : user_form2, 'demographicsForm' : user_demographics_form,'type':'Edit','url':'/labRatsApp/editProfile/'}, context)
 
 def signUp(request):
 	# Discourage logged in users from creating accounts

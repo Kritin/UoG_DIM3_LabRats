@@ -78,15 +78,17 @@ def index(request):
 def editUserDetail(request):
 	context = RequestContext(request)
 	if request.method == 'POST':
+		
+		b = LabRatUser.objects.get(user = request.user)
 		user_form = EditUserForm(data=request.POST)
 		user_form2 = EditLabRatUserForm(data=request.POST)
-		if user_form.is_valid() and user_form2.is_valid():
+		if user_form.is_valid() and (user_form2.is_valid() or not b.userType == "rat"):
 			a = User.objects.get(username = request.user.username)
 			user = EditUserForm(request.POST,instance = a)
 			user.save()
-			b = LabRatUser.objects.get(user = request.user)
-			user2 = EditLabRatUserForm(request.POST,instance = b)
-			user2.save()
+			if b.userType == "rat":
+				user2 = EditLabRatUserForm(request.POST,instance = b)
+				user2.save()
 			return HttpResponseRedirect('/labRatsApp/profile/'+request.user.username)	
 		 
 		else:
@@ -95,6 +97,7 @@ def editUserDetail(request):
 	else:	
 		LabUser = LabRatUser.objects.filter(user = request.user)[0]
 		Demographics = None
+		user_form2 = None
 		if LabUser.userType == "rat":
 			Demographics = DemographicsSurvey.objects.filter(user = request.user)[0]
 			user_form2 =  EditLabRatUserForm(initial = {'title':LabUser.title,'phone':LabUser.phone,'webpage':LabUser.webpage,'school':Demographics.school,'age':Demographics.age})	
