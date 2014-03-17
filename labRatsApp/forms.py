@@ -17,8 +17,8 @@ class UserDetailsForm(forms.ModelForm):
 	title = forms.ChoiceField(widget=forms.Select(attrs={'class':'form-control'}), choices=[('mr','Mr.'), ('mrs','Mrs.'), ('miss', 'Miss'), ('dr', 'Dr.'), ('prof', 'Prof.')])
 	userType = forms.ChoiceField(widget=forms.RadioSelect(attrs={'class':'form-control'}), label="Role", choices=[('rat','Rat'), ('experimenter','Experimenter')])
 	phone = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
-	picture = forms.ImageField(widget=forms.FileInput(attrs={'class':'form-control'}))
-	webpage = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
+	picture = forms.ImageField(widget=forms.FileInput(attrs={'class':'form-control'}), required=False)
+	webpage = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}), required=False)
 	class Meta:
 		model = LabRatUser
 		fields = ('title', 'phone', 'picture', 'userType', 'webpage')
@@ -72,7 +72,8 @@ class EditUserForm(forms.ModelForm):
 class EditUserDetailsForm(forms.ModelForm):
 	title = forms.ChoiceField(widget=forms.Select(attrs={'class':'form-control'}), choices=[('mr','Mr.'), ('mrs','Mrs.'), ('miss', 'Miss'), ('dr', 'Dr.'), ('prof', 'Prof.')])
 	phone = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
-	webpage = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
+	picture = forms.ImageField(widget=forms.FileInput(attrs={'class':'form-control'}), required=False)
+	webpage = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}), required=False)
 	
 	def __init__(self,*args,**kwargs):
 		super(EditUserDetailsForm,self).__init__(*args,**kwargs)
@@ -80,7 +81,7 @@ class EditUserDetailsForm(forms.ModelForm):
 
 	class Meta:
 		model = LabRatUser
-		fields = ('title', 'phone', 'webpage')
+		fields = ('title', 'phone', 'webpage', 'picture')
 
 class LabRatDetailsForm(forms.ModelForm):
 	school = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))

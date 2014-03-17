@@ -91,11 +91,10 @@ def editUserDetail(request):
 		user_details_form = EditUserDetailsForm(data=request.POST, instance=currentLabRatUser)
 		lab_rat_form = LabRatDetailsForm(data=request.POST, instance=currentDemographicSurvey)
 		
-		if user_details_form.is_valid() and (lab_rat_form.is_valid() or not currentLabRatUser.userType == "rat"):
+		if user_form.is_valid() and user_details_form.is_valid() and (lab_rat_form.is_valid() or not currentLabRatUser.userType == "rat"):
 
-			user_details_form.save()
 			user = user_form.save()
-			print user.password
+			user_details_form.save()
 			currentUser.set_password(user.password)
 			currentUser.save()
 
