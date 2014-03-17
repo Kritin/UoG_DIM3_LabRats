@@ -226,12 +226,24 @@ def profile(request,username):
 		e.tags = e.tags.split(", ")
 	
 	ratDetails = None
-	if(userDetails.userType == "rat"):
-		ratDetails = DemographicsSurvey.objects.filter(user = userDetails)[0]
-	activeExp = Experiment.objects.filter(user = userDetails,status="open")
-	pastExp = Experiment.objects.filter(user = userDetails,status="open")
+	activeExp = None
+	pastExp = None
+	
+	currExp = None
+	history = None
+	currBids = None
+	# get lab rat details and experiments
+	if userDetails.userType == "rat" :
+		ratDetails = DemographicsSurvey.objects.get(user = userDetails)
+		history = Experiment.objects.filter(participatein__user=userDetails, date_end__lt=datetime.date.today())
+		currExp = Experiment.objects.filter(participatein__user=userDetails, date_end__gte=datetime.date.today(), participatein__status='accepted')
+		currBids = Experiment.objects.filter(participatein__user=userDetails, date_end__gte=datetime.date.today(), participatein__status='bidding')
+	# get experimenter experiments
+	else:
+		activeExp = Experiment.objects.filter(user = userDetails, date_end__gte=datetime.date.today())
+		pastExp = Experiment.objects.filter(user = userDetails,date_end__lt=datetime.date.today())
 
-	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetails, "experiments": experiments, "ratDetails":ratDetails,'activeExperiments':activeExp,'pastExperiments':pastExp }, context)
+	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetails, "history": history, "currentBids": currBids, "currentExperiments": currExp, "ratDetails":ratDetails,'activeExperiments':activeExp,'pastExperiments':pastExp }, context)
 
 @login_required
 def bid(request,expId):
