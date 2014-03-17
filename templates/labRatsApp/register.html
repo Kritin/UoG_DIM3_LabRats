@@ -31,14 +31,37 @@
 	{% if registered %}
 	 	Thank you for registering!
 	{% else %}
+		<h1>Sign up</h1>
+
 		<form id="user_form" method="post" action="/labRatsApp/register/"  enctype="multipart/form-data">
 			
 			{% csrf_token %}
-			{{ userForm.as_p }}
-			{{ userDetailsForm.as_p }}
 
-			<div id="labRatDetails" style="display: none">
-				{{ labRatDetailsForm.as_p }}
+			<div class="row">
+				<div class="col-md-6">
+					{% for field in userForm %}
+						<div class="form-group">
+							<label for="id_{{ field.name }}">{{ field.label }}</label>
+							{{ field }}
+						</div>
+					{% endfor %}
+
+					{% for field in userDetailsForm %}
+						<div class="form-group">
+							<label for="id_{{ field.name }}">{{ field.label }}</label>
+							{{ field }}
+						</div>
+					{% endfor %}
+				</div>
+
+				<div id="labRatDetails" class="col-md-6" style="display: none">
+					{% for field in labRatDetailsForm %}
+						<div class="form-group">
+							<label for="id_{{ field.name }}">{{ field.label }}</label>
+							{{ field }}
+						</div>
+					{% endfor %}
+				</div>
 			</div>
 
 			<input class="btn btn-success" type="submit" name="submit" value="Sign Up" />
