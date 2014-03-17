@@ -320,7 +320,7 @@ def createExperiment(request):
 
 	create = False
 	if request.method == 'POST':
-		if username is not None:
+		if request.user.username is not None:
 			user = User.objects.filter(username = request.user.username)[0]  	
 			LabUser = LabRatUser.objects.filter(user = request.user)[0]
 
@@ -431,10 +431,15 @@ def experimentPage(request,expId):
 @login_required
 def modifyExperiment(request,expId):
 	context = RequestContext(request)
-	
+	print expId
+	print request.user.username
 	currentUser = User.objects.get(username=request.user.username)
 	currentExperiment = Experiment.objects.get(experimentID=expId)
-	currentRequirements = Requirement.objects.get(experiment=expId)
+	try:
+		currentRequirements = Requirement.objects.get(experiment=expId)
+	except:
+		currentRequirements = None
+	#print currentExperiment.user.user.username
 	if request.method == 'POST':
 	
 		experiment_form = ExperimentForm(data=request.POST, instance=currentExperiment)
@@ -442,7 +447,9 @@ def modifyExperiment(request,expId):
 		if experiment_form.is_valid() and requirements_form.is_valid():
 			
 			currentExperiment = experiment_form.save(commit=False)
+			currentExperiment.user.user = request.user
 			currentExperiment.save()
+
 			currentRequirements = requirements_form.save(commit=False)
 			currentRequirements.experiment = currentExperiment
 			currentRequirements.save()
