@@ -1,0 +1,12 @@
+{% extends 'labRatsApp/base.html' %}
+
+{% block title %}Tag Search{% endblock %}
+
+{% block mainbody %}
+
+	{%for e in experiments %}
+		{% include 'labRatsApp/experimentInfo.html' %}
+	{% endfor %}
+
+{% endblock %}
+
