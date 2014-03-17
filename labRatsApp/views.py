@@ -28,7 +28,7 @@ def index(request):
 		filters = RequirementsForm(data=request.GET)
 
 		if filters.is_valid():
-			#apply filters to query
+			# apply filters to query
 			if filters.cleaned_data.get("ageMin") is not None and filters.cleaned_data.get("ageMin") != "":
 				experiments = experiments.exclude(requirement__ageMin__lt=filters.cleaned_data.get("ageMin"))
 

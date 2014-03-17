@@ -1,0 +1,19 @@
+{% extends "labRatsApp/base.html" %}
+
+{% block title %}Search{% endblock %}
+
+{% block mainbody %}
+	{% if result_list %}
+		<!-- Display search results in an ordered list -->
+		<div style="clear: both;">
+			    <ol>
+				    {% for result in result_list %}
+				        <li>
+				            <strong><a href="{{ result.link }}">{{ result.title }}</a></strong><br />
+				            <em>{{ result.summary }}</em>
+				        </li>
+				    {% endfor %}
+			    </ol>
+		</div>
+	{% endif %}
+{% endblock %}
