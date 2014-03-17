@@ -264,6 +264,110 @@ def populate():
 	)
 
 	# Requirement
+	add_requirement(
+		experiment=experiment1,
+		ageMin=24,
+		ageMax=28,
+		sex="F",
+		firstLanguage="English",
+		educationLevel="",
+		location="Glasgow"
+	)
+
+	add_requirement(
+		experiment=experiment2,
+		ageMin=24,
+		ageMax=28,
+		sex="M",
+		firstLanguage="Dutch",
+		educationLevel="",
+		location="Glasgow"
+	)
+
+	add_requirement(
+		experiment=experiment3,
+		ageMin=19,
+		ageMax=21,
+		sex="",
+		firstLanguage="",
+		educationLevel="",
+		location="Glasgow"
+	)
+
+	# Timeslot
+	exp = Experiment.objects.get(experimentID=4)
+
+	timeslot1 = add_timeslot (
+		eid=exp,
+		date="2014-4-12",
+		time_from="10:00",
+		time_to="11:00"
+	)
+
+	timeslot2 = add_timeslot (
+		eid=exp,
+		date="2014-4-15",
+		time_from="11:00",
+		time_to="12:00"
+	)
+
+	timeslot3 = add_timeslot (
+		eid=exp,
+		date="2014-4-18",
+		time_from="14:00",
+		time_to="15:00"
+	)
+
+	timeslot4 = add_timeslot (
+		eid=exp,
+		date="2014-4-19",
+		time_from="11:00",
+		time_to="12:00"
+	)
+
+	# ParticipateIn
+	add_participateIn(
+		user=velizar,
+		experimentID=exp,
+		status="accepted",
+		date="2014-3-17"
+	)
+	
+	add_participateIn(
+		user=kritin,
+		experimentID=exp,
+		status="accepted",
+		date="2014-3-16"
+	)
+
+	add_participateIn(
+		user=flavia,
+		experimentID=exp,
+		status="bidding",
+		date="2014-3-11"
+	)
+
+	add_participateIn(
+		user=mircea,
+		experimentID=exp,
+		status="bidding",
+		date="2014-3-14"
+	)
+
+	add_participateIn(
+		user=matthew,
+		experimentID=exp,
+		status="bidding",
+		date="2014-3-12"
+	)
+
+	# EnrolIn
+	ts = Timeslot.objects.get(timeslotID=1)
+
+	add_enrolIn(
+		user=velizar,
+		timeslotID=ts
+	)
 
 def add_user(user,pas,firstN,lastN,email):
 	u = User.objects.get_or_create(username=user, password=pas, first_name=firstN, last_name=lastN, email=email)[0]
@@ -283,14 +387,14 @@ def add_exper(user, title, des, max_parti, num_participants, date_start, date_en
 def add_requirement(experiment, ageMin, ageMax, sex, firstLanguage, educationLevel, location):
 	return Requirement.objects.get_or_create(experiment=experiment, ageMin=ageMin, ageMax=ageMax, sex=sex, firstLanguage=firstLanguage, educationLevel=educationLevel, location=location)[0]
 
-def add_timeslot(timeslotID, experimentID, date, time_from, time_to):
-	return Timeslot.objects.get_or_create(timeslotID=timeslotID, experimentID=experimentID, date=date, time_from=time_from, time_to=time_to)[0]
+def add_timeslot(eid, date, time_from, time_to):
+	return Timeslot.objects.get_or_create(experimentID=eid, date=date, time_from=time_from, time_to=time_to)[0]
 
 def add_participateIn(user, experimentID, status, date):
 	return ParticipateIn.objects.get_or_create(user=user, experimentID=experimentID, status=status, date=date)[0]
 
 def add_enrolIn(user, timeslotID):
-	return EnrolIn(user=user, timeslotID=timeslotID)[0]
+	return EnrolIn.objects.get_or_create(user=user, timeslotID=timeslotID)[0]
 
 # Start execution here!
 if __name__ == '__main__':
