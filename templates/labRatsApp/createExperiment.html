@@ -8,7 +8,7 @@
 {% block mainbody %}
 
 
-	<form id="experiment_form" method = "post" action = "/labRatsApp/experiment/create/{{expId}}/" enctype="multipart/form-data">
+	<form id="experiment_form" method = "post" action = "/labRatsApp/experiment/create/" enctype="multipart/form-data">
 		
 		{% csrf_token %}
 		{{ experiment_form.as_p}}
