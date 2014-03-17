@@ -17,33 +17,12 @@ class UserDetailsForm(forms.ModelForm):
 	title = forms.ChoiceField(widget=forms.Select(attrs={'class':'form-control'}), choices=[('mr','Mr.'), ('mrs','Mrs.'), ('miss', 'Miss'), ('dr', 'Dr.'), ('prof', 'Prof.')])
 	userType = forms.ChoiceField(widget=forms.RadioSelect(attrs={'class':'form-control'}), label="Role", choices=[('rat','Rat'), ('experimenter','Experimenter')])
 	phone = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
-	picture = forms.ImageField(widget=forms.FileInput(attrs={'class':'form-control'}))
-	webpage = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
+	picture = forms.ImageField(widget=forms.FileInput(attrs={'class':'form-control'}), required=False)
+	webpage = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}), required=False)
 	class Meta:
 		model = LabRatUser
 		fields = ('title', 'phone', 'picture', 'userType', 'webpage')
 
-class LabRatDetailsForm(forms.ModelForm):
-	school = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
-	age = forms.IntegerField(widget=forms.TextInput(attrs={'class':'form-control'}))
-	sex = forms.ChoiceField(widget=forms.RadioSelect(attrs={'class':'form-control'}), choices=[('m', 'M'), ('f', 'F')])
-	firstLanguage = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}), label="First Language")
-	country = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
-	educationLevel = forms.ChoiceField(widget=forms.Select(attrs={'class':'form-control'}), label="Education Level", choices=[('primary', 'Primary School'), ('secondary school', 'Secondary School'), ('undergraduate', 'Undergraduate'), ('postgraduate', 'Postgraduate')])
-	location = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
-
-	class Meta:
-		model = DemographicsSurvey
-		fields = ('school', 'age', 'sex', 'firstLanguage', 'country', 'educationLevel', 'location')
-
-'''
-class UserForm2(forms.ModelForm):
-	userType = forms.ChoiceField(widget=forms.RadioSelect(),choices=[('rat','Rat'),('experimenter','Experimenter')])
-
-	class Meta:
-		model = LabRatUser
-		fields = ('title','phone','webpage','school','age','picture','userType')
-'''
 
 class ExperimentForm(forms.ModelForm):
 
@@ -93,7 +72,8 @@ class EditUserForm(forms.ModelForm):
 class EditUserDetailsForm(forms.ModelForm):
 	title = forms.ChoiceField(widget=forms.Select(attrs={'class':'form-control'}), choices=[('mr','Mr.'), ('mrs','Mrs.'), ('miss', 'Miss'), ('dr', 'Dr.'), ('prof', 'Prof.')])
 	phone = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
-	webpage = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
+	picture = forms.ImageField(widget=forms.FileInput(attrs={'class':'form-control'}), required=False)
+	webpage = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}), required=False)
 	
 	def __init__(self,*args,**kwargs):
 		super(EditUserDetailsForm,self).__init__(*args,**kwargs)
@@ -101,19 +81,21 @@ class EditUserDetailsForm(forms.ModelForm):
 
 	class Meta:
 		model = LabRatUser
-		fields = ('title', 'phone', 'webpage')
-'''
-# Original class
-class EditLabRatUserForm(forms.ModelForm):
-	def __init__(self,*args,**kwargs):
-		super(EditLabRatUserForm,self).__init__(*args,**kwargs)
-		#self.fields.insert(len(self.fields)-1, 'first_name',forms.ModelChoiceField(queryset=User.objects.filter(first_name=self.initial['first_name'])))
+		fields = ('title', 'phone', 'webpage', 'picture')
 
+class LabRatDetailsForm(forms.ModelForm):
+	school = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
+	age = forms.IntegerField(widget=forms.TextInput(attrs={'class':'form-control'}))
+	sex = forms.ChoiceField(widget=forms.RadioSelect(attrs={'class':'form-control'}), choices=[('m', 'M'), ('f', 'F')])
+	firstLanguage = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}), label="First Language")
+	country = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
+	educationLevel = forms.ChoiceField(widget=forms.Select(attrs={'class':'form-control'}), label="Education Level", choices=[('primary', 'Primary School'), ('secondary school', 'Secondary School'), ('undergraduate', 'Undergraduate'), ('postgraduate', 'Postgraduate')])
+	location = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
 
 	class Meta:
-		model = LabRatUser
-		fields = ('title','phone','webpage','school','age')
-'''
+		model = DemographicsSurvey
+		fields = ('school', 'age', 'sex', 'firstLanguage', 'country', 'educationLevel', 'location')
+
 
 
 

@@ -81,7 +81,9 @@ def editUserDetail(request):
 	# Get current user's details
 	currentUser = User.objects.get(username=request.user.username)
 	currentLabRatUser = LabRatUser.objects.get(user=request.user)
-	currentDemographicSurvey = DemographicsSurvey.objects.get(user__user=request.user)
+	currentDemographicSurvey = None
+	if currentLabRatUser.userType=="rat":
+		currentDemographicSurvey = DemographicsSurvey.objects.get(user__user=request.user)
 	user_form = None
 	
 	# Form has been submitted
@@ -91,10 +93,11 @@ def editUserDetail(request):
 		user_details_form = EditUserDetailsForm(data=request.POST, instance=currentLabRatUser)
 		lab_rat_form = LabRatDetailsForm(data=request.POST, instance=currentDemographicSurvey)
 		
-		if user_form.is_valid() and user_details_form.is_valid() and (lab_rat_form.is_valid() or not currentLabRatUser.userType == "rat"):
+		if user_details_form.is_valid() and (lab_rat_form.is_valid() or not currentLabRatUser.userType == "rat"):
 
-			user = user_form.save()
 			user_details_form.save()
+			user = user_form.save()
+			print user.password
 			currentUser.set_password(user.password)
 			currentUser.save()
 
@@ -286,7 +289,7 @@ def profile(request,username):
 			e.tags = e.tags.split(", ")
 
 	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetails, "history": history, "currentBids": currBids, "currentExperiments": currExp, "ratDetails":ratDetails,'activeExperiments':activeExp,'pastExperiments':pastExp }, context)
-
+	
 @login_required
 def bid(request,expId):
 	context = RequestContext(request)
@@ -310,7 +313,7 @@ def bid(request,expId):
 
 
 @login_required
-def createExperiment(request,username):
+def createExperiment(request):
 	context = RequestContext(request)
 
 	create = False
@@ -422,6 +425,47 @@ def experimentPage(request,expId):
 	# Render template
 	return render_to_response('labRatsApp/experiment.html', {'experimentDetails' : experimentDetails, 'currentUser': currentUser, 'author': author, 'authorDetails': authorDetails, 'acceptedUsers': acceptedUsers, 'biddingUsers': biddingUsers, 'timeslotForm': timeslotForm, 'timeslots': timeslots }, context)
 	
+	
+@login_required
+def modifyExperiment(request,expId):
+	context = RequestContext(request)
+	
+	currentUser = User.objects.get(username=request.user.username)
+	currentExperiment = Experiment.objects.get(experimentID=expId)
+	currentRequirements = Requirement.objects.get(experiment=expId)
+	if request.method == 'POST':
+	
+		experiment_form = ExperimentForm(data=request.POST, instance=currentExperiment)
+		requirements_form = RequirementsForm(data=request.POST, instance=currentRequirements)
+		if experiment_form.is_valid() and requirements_form.is_valid():
+			
+			currentExperiment = experiment_form.save(commit=False)
+			currentExperiment.user = currentUser
+			currentExperiment.save()
+			currentRequirements = requirements_form.save(commit=False)
+			currentRequirements.experiment = currentExperiment
+			currentRequirements.save()
+			return HttpResponseRedirect('/labRatsApp/profile/'+username+"/")
+		else:	
+			print experiment_form.errors, requirements_form.errors
+
+
+	else:
+
+	
+		user = User.objects.filter(username = username)[0]
+		LabUser = LabRatUser.objects.filter(user = user)[0]
+
+		if LabUser.userType == "rat":
+			return HttpResponse("You are not an experimenter")
+		else:
+			experiment_form = ExperimentForm()
+			requirements_form = RequirementsForm()
+	return render_to_response('labRatsApp/modifyExperiment.html', {'experiment_form' : experiment_form, 'requirements_form' : requirements_form, 'username':username}, context)
+
+	
+
+	
 @login_required
 def enrol(request, eID, tID):
 	# Check that user is a participant and that user has been accepted
@@ -504,6 +548,4 @@ def tag(request, tag):
 	experiments = Experiment.objects.filter(Q(tags__contains= ", "+tag+", ") | Q(tags__startswith=tag+", ") | Q(tags__endswith=", "+tag) | Q(tags=tag))
 	for e in experiments:
 		e.tags = e.tags.split(", ")
-		e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
-		e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
 	return render_to_response('labRatsApp/tag.html', {'experiments': experiments}, context)
