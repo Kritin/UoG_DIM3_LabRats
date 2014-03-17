@@ -7,7 +7,7 @@ PROJECT_PATH = os.path.abspath(PROJECT_PATH)
 TEMPLATE_PATH = os.path.join(PROJECT_PATH, 'templates')
 STATIC_PATH = os.path.join(PROJECT_PATH,'static')
 DATABASE_PATH = os.path.join(PROJECT_PATH, 'labRatsApp.db')
-LOGIN_URL = '/rango/login/'
+LOGIN_URL = '/labRatsApp/login/'
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -140,6 +140,17 @@ INSTALLED_APPS = (
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.core.context_processors.static",
+    "django.core.context_processors.tz",
+    "django.contrib.messages.context_processors.messages",
+    "django.core.context_processors.request"
+)
+
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.
@@ -168,3 +179,13 @@ LOGGING = {
         },
     }
 }
+''''
+EMAIL_HOST = 'server27.hostx.ro'
+EMAIL_HOST_USER='labrats@codebistro.eu'
+EMAIL_HOST_PASSWORD='labr@tsApp'
+'''
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'labratsapp@gmail.com'
+EMAIL_HOST_PASSWORD = 'labR@tsApp'	

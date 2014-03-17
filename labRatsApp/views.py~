@@ -414,15 +414,17 @@ def modifyParticipantStatus(request, eID, status, username):
 			participant.status = "rejected"
 		participant.date = datetime.date.today()
 		participant.save()
-		send_mail('Participation status of Experiment ' + experiment.title, 'You have been ' + participant.status , 'Brain@LabRats.com',
-		[participant.user.email], fail_silently=True)
-	# User is not a participant in the experiment
+		#print participant.user.email
+		
 	except:
 		return HttpResponse("{'successful': false }", content_type="application/json", status=404)
 
 	response = {}
 	response["successful"] = True
 	response["data"] = DemographicsSurvey.objects.values("user__user__username", "school", "firstLanguage", "age", "educationLevel", "sex", "country").get(user__participatein__user=participant.user, user__participatein__experimentID=eID)
+
+	send_mail('Participation status of Experiment ' + experiment.title , 'You have been ' + participant.status, 'labratsapp@gmail.com', [participant.user.email], fail_silently=False)
+	# User is not a participant in the experiment
 	return HttpResponse(json.dumps(response), content_type="application/json")
 
 def search(request):
