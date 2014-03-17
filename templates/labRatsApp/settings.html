@@ -1,0 +1,48 @@
+{% extends 'labRatsApp/base.html' %}
+
+{% block title %}{{user.username}}'s Profile Page{% endblock %}
+
+{% block scripts %}
+	
+	<script type="text/javascript">
+
+		$(function () {
+
+			// set lab rat details form to visible if page loads with a checked radio button
+			if($("input[name='userType']:checked").val() == "rat")
+				$("#labRatDetails").show();
+
+			// toggle visibility of lab rat details form
+			$("input[name='userType']").change(function(){
+				if($(this).val() == "rat")
+					$("#labRatDetails").show();
+				else
+					$("#labRatDetails").hide();
+			});
+
+		});
+
+	</script>
+
+{% endblock %}
+
+{% block mainbody %}
+
+	{% if registered %}
+	 	Thank you for registering!
+	{% else %}
+		<form id="user_form" method="post" action="/labRatsApp/editProfile/"  enctype="multipart/form-data">
+			
+			{% csrf_token %}
+			{{ userForm.as_p }}
+			{{ userDetailsForm.as_p }}
+			<div id="labRatDetails" style="display: none">
+				{{ labRatDetailsForm.as_p }}
+			</div>
+
+			<input class="btn btn-success" type="submit" name="submit" value="submit" />
+		</form>
+	{% endif %}
+	
+{% endblock %}
+
