@@ -59,8 +59,8 @@ class Requirement(models.Model):
 
 #weak entity
 class Timeslot(models.Model):
-    timeslotID = models.IntegerField(unique = True, primary_key=True)
-    experimentID = models.ForeignKey(Experiment) #Primary key
+    timeslotID = models.IntegerField(unique = True, primary_key=True) #Primary key
+    experimentID = models.ForeignKey(Experiment) 
     date = models.DateField(null=False)
     time_from = models.TimeField(null=False)
     time_to  = models.TimeField(null=False)
