@@ -94,12 +94,19 @@ def editUserDetail(request):
 
 	else:	
 		LabUser = LabRatUser.objects.filter(user = request.user)[0]
-
+		Demographics = None
+		user_form2 = None
+		if LabUser.userType == "rat":
+			Demographics = DemographicsSurvey.objects.filter(user = request.user)[0]
+			user_form2 =  EditLabRatUserForm(initial = {'title':LabUser.title,'phone':LabUser.phone,'webpage':LabUser.webpage,'school':Demographics.school,'age':Demographics.age})	
 		user_form = EditUserForm(initial = {'first_name':request.user.first_name,'last_name':request.user.last_name,'email':request.user.email})
 
-		user_form2 =  EditLabRatUserForm(initial = {'title':LabUser.title,'phone':LabUser.phone,'webpage':LabUser.webpage,'school':LabUser.school,'age':LabUser.age})	
 
-	return render_to_response('labRatsApp/signUp.html', {'user_form' : user_form,'user_form2' : user_form2, 'type':'Edit','url':'/labRatsApp/editProfile/'}, context)
+		
+
+		
+
+	return render_to_response('labRatsApp/settings.html', {'userForm' : user_form,'userDetailsForm' : user_form2, 'type':'Edit','url':'/labRatsApp/editProfile/'}, context)
 
 def signUp(request):
 	# Discourage logged in users from creating accounts
@@ -279,14 +286,18 @@ def createExperiment(request,username):
 
 			if user.is_active:
 				experiment_form = ExperimentForm(data=request.POST)
-				if experiment_form.is_valid():
+				requirements_form = RequirementsForm(data=request.POST)
+				if experiment_form.is_valid() and requirements_form.is_valid():
 					experiment = experiment_form.save(commit=False)
 					experiment.user = LabUser
 					experiment.save()
+					requirements = requirements_form.save(commit=False)
+					requirements.experiment = experiment
+					requirements.save()
 					create = True
 					return HttpResponseRedirect('/labRatsApp/profile/'+username+"/")
 				else:	
-					print experiment_form.errors
+					print experiment_form.errors, requirements_form.errors
 					return HttpResponse("Invalid experiment details supplied.")
 
 			else:
@@ -304,7 +315,8 @@ def createExperiment(request,username):
 			return HttpResponse("You are not an experimenter")
 		else:
 			experiment_form = ExperimentForm()
-			return render_to_response('labRatsApp/createExperiment.html', {'experiment_form' : experiment_form,'username':username}, context)
+			requirements_form = RequirementsForm()
+			return render_to_response('labRatsApp/createExperiment.html', {'experiment_form' : experiment_form, 'requirements_form' : requirements_form, 'username':username}, context)
 
 def experimentPage(request,expId):
 	context = RequestContext(request)
