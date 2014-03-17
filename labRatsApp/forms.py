@@ -52,6 +52,10 @@ class RequirementsForm(forms.ModelForm):
 		fields = ( 'ageMin','ageMax', 'sex','firstLanguage','educationLevel','location')
 		
 class TimeslotForm(forms.ModelForm):
+	date  = forms.DateField(widget=forms.widgets.DateInput(attrs={'class':'form-control'}, format="%d/%m/%Y"))
+	time_from  = forms.TimeField(widget=forms.widgets.DateInput(attrs={'class':'form-control'}))
+	time_to  = forms.TimeField(widget=forms.widgets.DateInput(attrs={'class':'form-control'}))
+
 	class Meta:
 		model = Timeslot
 		fields = ('date', 'time_from', 'time_to')
