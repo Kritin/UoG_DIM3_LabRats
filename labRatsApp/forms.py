@@ -31,9 +31,9 @@ class ExperimentForm(forms.ModelForm):
 	max_participants = forms.IntegerField(widget=forms.TextInput(attrs={'class':'form-control'}))
 	rewardType = forms.ChoiceField(widget=forms.Select(attrs={'class':'form-control'}), choices=[('volunteer','Volunteer'), ('paid','Paid'),('credit', 'Credit')])
 	tags = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
-	date_start  = forms.DateField(widget=forms.widgets.DateInput(format="%m/%d/%Y")) 
-	date_end = forms.DateField(widget=forms.widgets.DateInput(format="%m/%d/%Y")) 
-	rewardAmount = forms.IntegerField(required=False,widget=forms.TextInput,initial=0)
+	date_start  = forms.DateField(widget=forms.widgets.DateInput(attrs={'class':'form-control'}, format="%d/%m/%Y")) 
+	date_end = forms.DateField(widget=forms.widgets.DateInput(attrs={'class':'form-control'}, format="%d/%m/%Y")) 
+	rewardAmount = forms.IntegerField(required=False,widget=forms.TextInput(attrs={'class':'form-control'}),initial=0)
 
 	class Meta:
 		model = Experiment
@@ -42,7 +42,7 @@ class ExperimentForm(forms.ModelForm):
 class RequirementsForm(forms.ModelForm):
 	ageMin = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}), label="Minimum Age")
 	ageMax = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}), label="Maximum Age")
-	sex = forms.ChoiceField(widget=forms.Select(attrs={'class':'form-control'}), choices=[('m','M'), ('f','F')], label="Sex")
+	sex = forms.ChoiceField(widget=forms.Select(attrs={'class':'form-control'}), choices=[(' ', ' '), ('m','M'), ('f','F')], label="Sex")
 	firstLanguage = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}), label="First Language")
 	educationLevel = forms.ChoiceField(widget=forms.Select(attrs={'class':'form-control'}), label="Education Level", choices=[('primary', 'Primary School'), ('secondary school', 'Secondary School'), ('undergraduate', 'Undergraduate'), ('postgraduate', 'Postgraduate')])
 	location = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}), label="Location")
