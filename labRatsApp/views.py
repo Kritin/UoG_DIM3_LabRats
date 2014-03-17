@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.core.mail import send_mail
 
 from labRatsApp.models import LabRatUser, Experiment, ParticipateIn, DemographicsSurvey, Timeslot, EnrolIn
 from labRatsApp.forms import UserForm, UserDetailsForm, LabRatDetailsForm
@@ -279,7 +280,7 @@ def createExperiment(request,username):
 			else:
 				return HttpResponse("Your labRats account is disabled.")
 		else:
-			return HttpResponse("Invalid useename is None")
+			return HttpResponse("Invalid username is None")
 
 		
 	else:
@@ -401,16 +402,20 @@ def modifyParticipantStatus(request, eID, status, username):
 	# Set ParticipateIn status and date
 	try:
 		participant = ParticipateIn.objects.get(experimentID=eID, user__user__username=username)
+		experiment = Experiment.objects.get(experimentID=eID)
 		if status == "accept":
 			participant.status = "accepted"
 			# increase number of participants
-			experiment = Experiment.objects.get(experimentID=eID)
+			
 			experiment.num_of_participants += 1
 			experiment.save()
+			
 		else:
 			participant.status = "rejected"
 		participant.date = datetime.date.today()
 		participant.save()
+		send_mail('Participation status of Experiment ' + experiment.title, 'You have been ' + participant.status , 'Brain@LabRats.com',
+		[participant.user.email], fail_silently=True)
 	# User is not a participant in the experiment
 	except:
 		return HttpResponse("{'successful': false }", content_type="application/json", status=404)
