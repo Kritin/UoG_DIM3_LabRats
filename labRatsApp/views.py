@@ -13,7 +13,6 @@ from django.core.mail import send_mail
 from labRatsApp.models import LabRatUser, Experiment, ParticipateIn, DemographicsSurvey, Timeslot, EnrolIn
 from labRatsApp.forms import UserForm, UserDetailsForm, LabRatDetailsForm
 from labRatsApp.forms import ExperimentForm, RequirementsForm, TimeslotForm
-from labRatsApp.forms import EditUserForm, EditLabRatUserForm
 from labRatsApp.bing_search import run_query
 
 def index(request):
@@ -78,28 +77,30 @@ def index(request):
 def editUserDetail(request):
 	context = RequestContext(request)
 	if request.method == 'POST':
-		user_form = EditUserForm(data=request.POST)
-		user_form2 = EditLabRatUserForm(data=request.POST)
-		if user_form.is_valid() and user_form2.is_valid():
+		
+		b = LabRatUser.objects.get(user = request.user)
+		user_form = UserForm(data=request.POST)
+		user_form2 = LabRatDetailsForm(data=request.POST)
+		if user_form.is_valid() and ((user_form2.is_valid() and user_demographics_form.is_valid()) or not b.userType == "rat"):
 			a = User.objects.get(username = request.user.username)
-			user = EditUserForm(request.POST,instance = a)
+			user = UserForm(request.POST,instance = a)
 			user.save()
-			b = LabRatUser.objects.get(user = request.user)
-			user2 = EditLabRatUserForm(request.POST,instance = b)
-			user2.save()
+			if b.userType == "rat":
+				user2 = LabRatDetailsForm(request.POST,instance=b)
+				user2.save()
 			return HttpResponseRedirect('/labRatsApp/profile/'+request.user.username)	
 		 
 		else:
-					print user_form.errors,user_form2.errors
+					print user_form.errors,user_form2.errors,user_demographics_form.errors
 
 	else:	
 		LabUser = LabRatUser.objects.filter(user = request.user)[0]
+		user_form2 = None
+		if LabUser.userType == "rat":
+			user_form2 =  LabRatDetailsForm(initial = {'title':LabUser.title,'phone':LabUser.phone,'webpage':LabUser.webpage})	
+			user_form = UserForm(initial = {'first_name':request.user.first_name,'last_name':request.user.last_name,'email':request.user.email})		
 
-		user_form = EditUserForm(initial = {'first_name':request.user.first_name,'last_name':request.user.last_name,'email':request.user.email})
-
-		user_form2 =  EditLabRatUserForm(initial = {'title':LabUser.title,'phone':LabUser.phone,'webpage':LabUser.webpage,'school':LabUser.school,'age':LabUser.age})	
-
-	return render_to_response('labRatsApp/signUp.html', {'user_form' : user_form,'user_form2' : user_form2, 'type':'Edit','url':'/labRatsApp/editProfile/'}, context)
+	return render_to_response('labRatsApp/settings.html', {'userForm' : user_form,'userDetailsForm' : user_form2,'type':'Edit','url':'/labRatsApp/editProfile/'}, context)
 
 def signUp(request):
 	# Discourage logged in users from creating accounts
@@ -279,14 +280,18 @@ def createExperiment(request,username):
 
 			if user.is_active:
 				experiment_form = ExperimentForm(data=request.POST)
-				if experiment_form.is_valid():
+				requirements_form = RequirementsForm(data=request.POST)
+				if experiment_form.is_valid() and requirements_form.is_valid():
 					experiment = experiment_form.save(commit=False)
 					experiment.user = LabUser
 					experiment.save()
+					requirements = requirements_form.save(commit=False)
+					requirements.experiment = experiment
+					requirements.save()
 					create = True
 					return HttpResponseRedirect('/labRatsApp/profile/'+username+"/")
 				else:	
-					print experiment_form.errors
+					print experiment_form.errors, requirements_form.errors
 					return HttpResponse("Invalid experiment details supplied.")
 
 			else:
@@ -304,7 +309,8 @@ def createExperiment(request,username):
 			return HttpResponse("You are not an experimenter")
 		else:
 			experiment_form = ExperimentForm()
-			return render_to_response('labRatsApp/createExperiment.html', {'experiment_form' : experiment_form,'username':username}, context)
+			requirements_form = RequirementsForm()
+			return render_to_response('labRatsApp/createExperiment.html', {'experiment_form' : experiment_form, 'requirements_form' : requirements_form, 'username':username}, context)
 
 def experimentPage(request,expId):
 	context = RequestContext(request)
