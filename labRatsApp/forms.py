@@ -3,22 +3,34 @@ from labRatsApp.models import LabRatUser, User, DemographicsSurvey, Experiment, 
 
 class UserForm(forms.ModelForm):
 
-	password = forms.CharField(widget=forms.PasswordInput())
+	username = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
+	password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}))
+	first_name = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}))
+	last_name = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
+	email = forms.EmailField(widget=forms.TextInput(attrs={'class':'form-control'}))
 
 	class Meta:
 		model = User
 		fields = ('username', 'password','first_name','last_name','email')
 
 class UserDetailsForm(forms.ModelForm):
-	title = forms.ChoiceField(widget=forms.Select(), choices=[('mr','Mr.'), ('mrs','Mrs.'), ('miss', 'Miss'), ('dr', 'Dr.'), ('prof', 'Prof.')])
-	userType = forms.ChoiceField(widget=forms.RadioSelect(),choices=[('rat','Rat'), ('experimenter','Experimenter')])
+	title = forms.ChoiceField(widget=forms.Select(attrs={'class':'form-control'}), choices=[('mr','Mr.'), ('mrs','Mrs.'), ('miss', 'Miss'), ('dr', 'Dr.'), ('prof', 'Prof.')])
+	userType = forms.ChoiceField(widget=forms.RadioSelect(attrs={'class':'form-control'}), label="Role", choices=[('rat','Rat'), ('experimenter','Experimenter')])
+	phone = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
+	picture = forms.ImageField(widget=forms.FileInput(attrs={'class':'form-control'}))
+	webpage = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
 	class Meta:
 		model = LabRatUser
 		fields = ('title', 'phone', 'picture', 'userType', 'webpage')
 
 class LabRatDetailsForm(forms.ModelForm):
-	sex = forms.ChoiceField(widget=forms.RadioSelect(), choices=[('m', 'M'), ('f', 'F')])
-	educationLevel = forms.ChoiceField(widget=forms.Select(), choices=[('primary', 'Primary School'), ('secondary school', 'Secondary School'), ('undergraduate', 'Undergraduate'), ('postgraduate', 'Postgraduate')])
+	school = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
+	age = forms.IntegerField(widget=forms.TextInput(attrs={'class':'form-control'}))
+	sex = forms.ChoiceField(widget=forms.RadioSelect(attrs={'class':'form-control'}), choices=[('m', 'M'), ('f', 'F')])
+	firstLanguage = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}), label="First Language")
+	country = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
+	educationLevel = forms.ChoiceField(widget=forms.Select(attrs={'class':'form-control'}), label="Education Level", choices=[('primary', 'Primary School'), ('secondary school', 'Secondary School'), ('undergraduate', 'Undergraduate'), ('postgraduate', 'Postgraduate')])
+	location = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
 
 	class Meta:
 		model = DemographicsSurvey
@@ -46,6 +58,13 @@ class ExperimentForm(forms.ModelForm):
 		fields = ( 'title','description', 'max_participants','date_start','date_end','tags','rewardType','rewardAmount', 'location')
 
 class RequirementsForm(forms.ModelForm):
+	ageMin = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}), label="Minimum Age")
+	ageMax = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}), label="Maximum Age")
+	sex = forms.ChoiceField(widget=forms.Select(attrs={'class':'form-control'}), choices=[('m','M'), ('f','F')], label="Sex")
+	firstLanguage = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}), label="First Language")
+	educationLevel = forms.ChoiceField(widget=forms.Select(attrs={'class':'form-control'}), label="Education Level", choices=[('primary', 'Primary School'), ('secondary school', 'Secondary School'), ('undergraduate', 'Undergraduate'), ('postgraduate', 'Postgraduate')])
+	location = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}), label="Location")
+
 	class Meta:
 		model = Requirement
 		fields = ('ageMin', 'ageMax', 'sex', 'firstLanguage', 'educationLevel', 'location')
