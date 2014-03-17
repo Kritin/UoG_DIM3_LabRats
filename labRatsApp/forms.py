@@ -5,7 +5,7 @@ class UserForm(forms.ModelForm):
 
 	username = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
 	password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}))
-	first_name = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}))
+	first_name = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
 	last_name = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control'}))
 	email = forms.EmailField(widget=forms.TextInput(attrs={'class':'form-control'}))
 
@@ -73,6 +73,39 @@ class TimeslotForm(forms.ModelForm):
 	class Meta:
 		model = Timeslot
 		fields = ('date', 'time_from', 'time_to')
+
+class EditUserForm(forms.ModelForm):
+	def __init__(self,*args,**kwargs):
+		super(EditUserForm,self).__init__(*args,**kwargs)
+		#self.fields.insert(len(self.fields)-1, 'first_name',forms.ModelChoiceField(queryset=User.objects.filter(first_name=self.initial['first_name'])))
+
+		'''
+
+		self.fields.insert(len(self.fields), 'first_name',forms.CharField(
+User.objects.all().filter(first_name=self.initial['first_name'])[0]))
+ 
+ 		self.fields.insert(len(self.fields), 'last_name',forms.CharField(
+User.objects.all().filter(last_name=self.initial['last_name'])[0]))
+
+ 		self.fields.insert(len(self.fields), 'email',forms.CharField(
+User.objects.all().filter(email=self.initial['email'])[0]))
+	
+	'''
+
+	class Meta:
+		model = User
+		fields = ('first_name','last_name','email')
+
+
+class EditLabRatUserForm(forms.ModelForm):
+	def __init__(self,*args,**kwargs):
+		super(EditLabRatUserForm,self).__init__(*args,**kwargs)
+		#self.fields.insert(len(self.fields)-1, 'first_name',forms.ModelChoiceField(queryset=User.objects.filter(first_name=self.initial['first_name'])))
+
+
+	class Meta:
+		model = LabRatUser
+		fields = ('title','phone','webpage')
 
 '''
 # Original class
