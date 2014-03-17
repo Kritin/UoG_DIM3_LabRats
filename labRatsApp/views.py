@@ -275,6 +275,8 @@ def profile(request,username):
 			e.tags = e.tags.split(", ")
 	# get experimenter experiments
 	else:
+		current_user.canEdit = True
+
 		activeExp = Experiment.objects.filter(user = userDetails, date_end__gte=datetime.date.today())
 		pastExp = Experiment.objects.filter(user = userDetails,date_end__lt=datetime.date.today())
 

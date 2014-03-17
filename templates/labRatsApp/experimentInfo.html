@@ -3,6 +3,10 @@
 	<!-- Experiment title -->
 	<div class="panel-heading">
 		<h5><a data-toggle="collapse" data-parent="#experiments" href="#collapse{{e}}" class="pull-right"><span class="glyphicon glyphicon-collapse-down"></span></a></h5>
+		{% if user.canEdit %}
+			<p class="pull-right">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+			<h5><a href="/labRatsApp/experiment/modify/{{e}}" class="pull-right"><span class="glyphicon glyphicon-pencil"></span></a></h5>
+		{% endif %}
 		<h5><a href="/labRatsApp/experiment/{{e}}">{{e.title}}</a></h5>						
 	</div>
 	<!-- Experiment body -->
