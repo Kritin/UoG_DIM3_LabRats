@@ -46,10 +46,17 @@
 							{{ field }}
 						</div>
 					{% endfor %}
+					
+					{% for field in userDetailsForm %}
+						<div class="form-group">
+							<label for="id_{{ field.name }}">{{ field.label }}</label>
+							{{ field }}
+						</div>
+					{% endfor %}
 				</div>
 
 				<div id="labRatDetails" class="col-md-6">
-					{% for field in userDetailsForm %}
+					{% for field in labRatDetailsForm %}
 						<div class="form-group {% if field.errors %}has-error{% endif %}">
 							<label for="id_{{ field.name }}">{{ field.label }}</label>
 							{{ field.errors }}

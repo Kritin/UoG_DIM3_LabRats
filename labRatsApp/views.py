@@ -13,6 +13,7 @@ from django.core.mail import send_mail
 from labRatsApp.models import LabRatUser, Experiment, ParticipateIn, DemographicsSurvey, Timeslot, EnrolIn
 from labRatsApp.forms import UserForm, UserDetailsForm, LabRatDetailsForm
 from labRatsApp.forms import ExperimentForm, RequirementsForm, TimeslotForm
+from labRatsApp.forms import EditUserForm, EditUserDetailsForm
 from labRatsApp.bing_search import run_query
 
 def index(request):
@@ -76,31 +77,47 @@ def index(request):
 @login_required
 def editUserDetail(request):
 	context = RequestContext(request)
+	
+	# Get current user's details
+	currentUser = User.objects.get(username=request.user.username)
+	currentLabRatUser = LabRatUser.objects.get(user=request.user)
+	currentDemographicSurvey = DemographicsSurvey.objects.get(user__user=request.user)
+	user_form = None
+	
+	# Form has been submitted
 	if request.method == 'POST':
 		
-		b = LabRatUser.objects.get(user = request.user)
-		user_form = UserForm(data=request.POST)
-		user_form2 = LabRatDetailsForm(data=request.POST)
-		if user_form.is_valid() and ((user_form2.is_valid() and user_demographics_form.is_valid()) or not b.userType == "rat"):
-			a = User.objects.get(username = request.user.username)
-			user = UserForm(request.POST,instance = a)
-			user.save()
-			if b.userType == "rat":
-				user2 = LabRatDetailsForm(request.POST,instance=b)
-				user2.save()
+		user_form = EditUserForm(data=request.POST, instance=currentUser )
+		user_details_form = EditUserDetailsForm(data=request.POST, instance=currentLabRatUser)
+		lab_rat_form = LabRatDetailsForm(data=request.POST, instance=currentDemographicSurvey)
+		
+		if user_details_form.is_valid() and (lab_rat_form.is_valid() or not currentLabRatUser.userType == "rat"):
+
+			user_details_form.save()
+			user = user_form.save()
+			print user.password
+			currentUser.set_password(user.password)
+			currentUser.save()
+
+			if currentLabRatUser.userType == "rat":
+				lab_rat_form.save()
+				
 			return HttpResponseRedirect('/labRatsApp/profile/'+request.user.username)	
 		 
 		else:
-					print user_form.errors,user_form2.errors,user_demographics_form.errors
+			#print user_form.errors, user_rat_form.errors, user_details_form.errors
+			print lab_rat_form.errors, user_details_form.errors
 
 	else:	
 		LabUser = LabRatUser.objects.filter(user = request.user)[0]
-		user_form2 = None
+		user_form = EditUserForm(instance=currentUser)
+		user_details_form = EditUserDetailsForm(instance=currentLabRatUser)
 		if LabUser.userType == "rat":
-			user_form2 =  LabRatDetailsForm(initial = {'title':LabUser.title,'phone':LabUser.phone,'webpage':LabUser.webpage})	
-			user_form = UserForm(initial = {'first_name':request.user.first_name,'last_name':request.user.last_name,'email':request.user.email})		
 
-	return render_to_response('labRatsApp/settings.html', {'userForm' : user_form,'userDetailsForm' : user_form2,'type':'Edit','url':'/labRatsApp/editProfile/'}, context)
+			lab_rat_form = LabRatDetailsForm(instance=currentDemographicSurvey)
+		else:
+			lab_rat_form = None
+	return render_to_response('labRatsApp/settings.html', {'userForm' : user_form, 'userDetailsForm' : user_details_form, 'labRatDetailsForm' : lab_rat_form,'type':'Edit','url':'/labRatsApp/editProfile/'}, context)
 
 def signUp(request):
 	# Discourage logged in users from creating accounts
@@ -115,7 +132,7 @@ def signUp(request):
 		userForm = UserForm(data=request.POST)
 		userDetailsForm = UserDetailsForm(data=request.POST)
 		labRatDetailsForm = LabRatDetailsForm(data=request.POST)
-
+		
 		# Check type of user
 		userHasValidDetails = userDetailsForm.is_valid()
 		isRat = (userDetailsForm.cleaned_data.get('userType') == "rat")
