@@ -338,8 +338,6 @@ def createExperiment(request):
 					return HttpResponseRedirect('/labRatsApp/profile/'+request.user.username+"/")
 				else:	
 					print experiment_form.errors, requirements_form.errors
-					return HttpResponse("Invalid experiment details supplied.")
-
 			else:
 				return HttpResponse("Your labRats account is disabled.")
 		else:
@@ -356,7 +354,8 @@ def createExperiment(request):
 		else:
 			experiment_form = ExperimentForm()
 			requirements_form = RequirementsForm()
-			return render_to_response('labRatsApp/createExperiment.html', {'experiment_form' : experiment_form, 'requirements_form' : requirements_form, 'username':request.user.username}, context)
+	
+	return render_to_response('labRatsApp/createExperiment.html', {'experiment_form' : experiment_form, 'requirements_form' : requirements_form, 'username':request.user.username}, context)
 
 def experimentPage(request,expId):
 	context = RequestContext(request)
