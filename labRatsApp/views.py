@@ -554,5 +554,7 @@ def tag(request, tag):
 	# get all experiments that share the same tag
 	experiments = Experiment.objects.filter(Q(tags__contains= ", "+tag+", ") | Q(tags__startswith=tag+", ") | Q(tags__endswith=", "+tag) | Q(tags=tag))
 	for e in experiments:
+		e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
+		e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
 		e.tags = e.tags.split(", ")
 	return render_to_response('labRatsApp/tag.html', {'experiments': experiments}, context)
