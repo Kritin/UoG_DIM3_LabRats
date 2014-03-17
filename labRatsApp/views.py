@@ -1,6 +1,6 @@
 import datetime, json
 
-from django.http import HttpResponse,HttpResponseRedirect
+from django.http import HttpResponse,HttpResponseRedirect,HttpResponseForbidden
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.contrib import messages
@@ -348,9 +348,9 @@ def createExperiment(request):
 		user = User.objects.filter(username = request.user.username)[0]
 		LabUser = LabRatUser.objects.filter(user = request.user)[0]
 		if request.user.username != user.username:
-			return HttpResponse("Hacker!! , This is not your username.")
+			return HttpResponseForbidden("Hacker!! , This is not your username.")
 		elif LabUser.userType == "rat":
-			return HttpResponse("You are not an experimenter")
+			return HttpResponseForbidden("You are not an experimenter")
 		else:
 			experiment_form = ExperimentForm()
 			requirements_form = RequirementsForm()
