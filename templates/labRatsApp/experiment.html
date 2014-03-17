@@ -37,7 +37,7 @@
 								<h4 class="col-md-11 col-xs-8">{{experimentDetails.title}}</h4>
 								<div class="col-md-1 col-xs-4">
 									{% if currentUser.isOwner %}
-										<a class="btn" href="/labRatsApp/experiment/modify/{{experimentDetails}}" class="pull-right"><span class="glyphicon glyphicon-pencil"></span></a></h5>
+										<a class="btn" href="/labRatsApp/experiment/modify/{{experimentDetails}}/" class="pull-right"><span class="glyphicon glyphicon-pencil"></span></a></h5>
 									{% endif %}
 									{% if request.session.userType = "rat" %}
 										<a class="btn btn-success pull-right bidbtn" data-exp="{{experimentDetails}}">Bid</a>
