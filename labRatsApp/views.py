@@ -52,7 +52,7 @@ def index(request):
 		# get sort by
 		sortBy = request.GET.get("sortBy")
 		if sortBy is not None and sortBy != "" and sortBy == "reward":
-			experiments = experiments.order_by("rewardAmount")
+			experiments = experiments.order_by("-rewardAmount")
 			selected = "reward"
 		elif sortBy is not None and sortBy != "" and sortBy == "location":
 			experiments = experiments.order_by("location")

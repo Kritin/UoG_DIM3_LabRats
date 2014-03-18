@@ -38,7 +38,7 @@ class Experiment(models.Model):
     date_end = models.DateField(null=False)
     tags = models.TextField() 
     rewardType = models.CharField(max_length=128)
-    rewardAmount = models.CharField(max_length=128)
+    rewardAmount = models.IntegerField()
     status = models.CharField(max_length=128, default= "open")
     location = models.CharField(max_length=128) # location where experiment is taking place
 
