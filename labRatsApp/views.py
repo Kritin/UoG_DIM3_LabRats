@@ -101,6 +101,14 @@ def editUserDetail(request):
 			currentUser.set_password(user.password)
 			currentUser.save()
 
+			userDetails = user_details_form.save(commit=False)
+			userDetails.user = user
+
+			if 'picture' in request.FILES:
+				userDetails.picture = request.FILES['picture']
+
+			userDetails.save()
+
 			if currentLabRatUser.userType == "rat":
 				lab_rat_form.save()
 				
