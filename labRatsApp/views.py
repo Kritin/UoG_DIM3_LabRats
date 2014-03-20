@@ -67,10 +67,7 @@ def index(request):
 	if sortBy is None:
 		experiments = experiments.order_by("date_end")
 
-	for e in experiments:
-		e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
-		e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
-		e.tags = e.tags.split(", ")
+	prepareExperiments(experiments)
 
 	return render_to_response('labRatsApp/index.html', {'experiments' : experiments, 'filters': filters, 'selected': selected}, context)
 
@@ -248,10 +245,7 @@ def profile(request,username):
 	userDetails = LabRatUser.objects.filter(user = current_user)[0]
 
 	experiments = Experiment.objects.filter(user = userDetails)
-	for e in experiments:
-		e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
-		e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
-		e.tags = e.tags.split(", ")
+	prepareExperiments(experiments)
 	
 	ratDetails = None
 	activeExp = None
@@ -267,20 +261,10 @@ def profile(request,username):
 		currExp = Experiment.objects.filter(participatein__user=userDetails, date_end__gte=datetime.date.today(), participatein__status='accepted')
 		currBids = Experiment.objects.filter(participatein__user=userDetails, date_end__gte=datetime.date.today(), participatein__status='bidding')
 
-		for e in history:
-			e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
-			e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
-			e.tags = e.tags.split(", ")
+		prepareExperiments(history)
+		prepareExperiments(currExp)
+		prepareExperiments(currBids)
 
-		for e in currExp:
-			e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
-			e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
-			e.tags = e.tags.split(", ")
-
-		for e in currBids:
-			e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
-			e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
-			e.tags = e.tags.split(", ")
 	# get experimenter experiments
 	else:
 		current_user.canEdit = True
@@ -288,15 +272,8 @@ def profile(request,username):
 		activeExp = Experiment.objects.filter(user = userDetails, date_end__gte=datetime.date.today())
 		pastExp = Experiment.objects.filter(user = userDetails,date_end__lt=datetime.date.today())
 
-		for e in activeExp:
-			e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
-			e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
-			e.tags = e.tags.split(", ")
-
-		for e in pastExp:
-			e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
-			e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
-			e.tags = e.tags.split(", ")
+		prepareExperiments(activeExp)
+		prepareExperiments(pastExp)
 
 	return render_to_response("labRatsApp/profile.html", {"user" : current_user, "userDetails": userDetails, "history": history, "currentBids": currBids, "currentExperiments": currExp, "ratDetails":ratDetails,'activeExperiments':activeExp,'pastExperiments':pastExp }, context)
 	
@@ -545,22 +522,32 @@ def modifyParticipantStatus(request, eID, status, username):
 
 def search(request):
 	context = RequestContext(request)
-	result_list = []
 
-	if request.method == 'POST':
+	experiments = None
+	query = ""
+
+	# Retrieve search query
+	if request.method == "POST":
 		query = request.POST['query'].strip()
 
-		if query:
-			result_list = run_query(query)
+		if not query:
+			return HttpResponse("Invalid search query.", status=403)
+		
+		experiments = Experiment.objects.filter(Q(title__contains=query) | Q(description__contains=query) | Q(tags__contains=query))
+		prepareExperiments(experiments)
 
-	return render_to_response('labRatsApp/search.html', {'result_list': result_list}, context)
+	return render_to_response('labRatsApp/search.html', {'query': query, 'experiments': experiments}, context)
 
 def tag(request, tag):
 	context = RequestContext(request)
 	# get all experiments that share the same tag
 	experiments = Experiment.objects.filter(Q(tags__contains= ", "+tag+", ") | Q(tags__startswith=tag+", ") | Q(tags__endswith=", "+tag) | Q(tags=tag))
+	prepareExperiments(experiments)
+	return render_to_response('labRatsApp/search.html', {'query': tag, 'experiments': experiments}, context)
+
+
+def prepareExperiments(experiments):
 	for e in experiments:
 		e.percent_full = ( e.num_of_participants * 100 ) / e.max_participants
 		e.description_short = (e.description[:256] + "...") if len(e.description) > 256 else e.description
 		e.tags = e.tags.split(", ")
-	return render_to_response('labRatsApp/tag.html', {'experiments': experiments}, context)
