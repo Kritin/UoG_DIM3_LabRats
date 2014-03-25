@@ -14,7 +14,7 @@ from labRatsApp.models import LabRatUser, Experiment, ParticipateIn, Demographic
 from labRatsApp.forms import UserForm, UserDetailsForm, LabRatDetailsForm
 from labRatsApp.forms import ExperimentForm, RequirementsForm, TimeslotForm
 from labRatsApp.forms import EditUserForm, EditUserDetailsForm
-from labRatsApp.bing_search import run_query
+#from labRatsApp.bing_search import run_query
 
 def index(request):
 	context = RequestContext(request)
